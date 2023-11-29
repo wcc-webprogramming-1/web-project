@@ -1,0 +1,46 @@
+name: push-to-tophat
+on: [push]
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: tophat.sunywcc.edu
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_KEY }}
+          script: |
+            alias node=/home/students/webgroup1/server_impl/node/bin/node
+            export PATH=/home/students/webgroup1/server_impl/node/bin:$PATH
+            export PATH=/home/students/webgroup1/server_impl/bin:$PATH
+            pm2 stop "node build"
+      - run: npm i
+      - run: npm run build
+      - uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: tophat.sunywcc.edu
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_KEY }}
+          delete: 'true'
+          uploads: |
+            ./build/ => /home/students/webgroup1/server_impl/build/
+            ./package.json => /home/students/webgroup1/server_impl/build/package.json
+      - uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: tophat.sunywcc.edu
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_KEY }}
+          script: |
+            alias node=/home/students/webgroup1/server_impl/node/bin/node
+            export PATH=/home/students/webgroup1/server_impl/node/bin:$PATH
+            export PATH=/home/students/webgroup1/server_impl/bin:$PATH
+            cd /home/students/webgroup1/server_impl/node/lib/node_modules/npm/bin
+            node ./npm-cli.js --prefix /home/students/webgroup1/server_impl/build install
+            cd /home/students/webgroup1/server_impl/build
+            pm2 start "node build"
+
+            
