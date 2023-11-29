@@ -36,9 +36,9 @@ function createDatabaseContext() {
     user: env.DATABASE_USER,
     password: env.DATABASE_PASS,
     connectionLimit: 5,
-    compress: env.USE_SSH_BRIDGE ? true : false,
+    compress: env.USE_SSH_BRIDGE === "true",
     database: "webgroup1_default",
-    stream: !(env.USE_SSH_BRIDGE) ? undefined : (callback) => {
+    stream: env.USE_SSH_BRIDGE !== "true" ? undefined : (callback) => {
       createSshTunnel().then(tunnel => {
         try {
           callback!(undefined, tunnel);
