@@ -28,7 +28,6 @@ jobs:
           delete: 'true'
           uploads: |
             ./build/ => /home/students/webgroup1/server_impl/build/
-            ./package.json => /home/students/webgroup1/server_impl/build/package.json
       - uses: appleboy/ssh-action@v1.0.0
         with:
           host: tophat.sunywcc.edu
