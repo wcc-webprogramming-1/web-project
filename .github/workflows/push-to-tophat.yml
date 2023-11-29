@@ -49,6 +49,11 @@ jobs:
             cd /home/students/webgroup1/server_impl/node/lib/node_modules/npm/bin
             node ./npm-cli.js --prefix /home/students/webgroup1/server_impl/build install
             cd /home/students/webgroup1/server_impl/build
+            export USE_SSH_BRIDGE=false
+            export DATABASE_HOST=localhost
+            export DATABASE_PORT=3306
+            export DATABASE_USER=gkods46318
+            export DATABASE_PASS=which happy measure glass
             pm2 start "node build"
 
             
