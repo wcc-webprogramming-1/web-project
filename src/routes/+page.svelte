@@ -4,7 +4,7 @@
 <center>
   <h1>Homepage</h1>
   <p>Temporary landing page used to fill space</p>
-  <p>Test #1</p>
+  <p>Test #2</p>
 </center>
 
 <style>
