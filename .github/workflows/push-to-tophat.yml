@@ -28,6 +28,16 @@ jobs:
           delete: 'true'
           uploads: |
             ./build/ => /home/students/webgroup1/server_impl/build/
+      - uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: tophat.sunywcc.edu
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_KEY }}
+          delete: 'true'
+          uploads: |
+            ./ => /home/students/webgroup1/server_impl/build/
+          ignore: |
+            !package.json
       - uses: appleboy/ssh-action@v1.0.0
         with:
           host: tophat.sunywcc.edu
