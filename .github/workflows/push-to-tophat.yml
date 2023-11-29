@@ -33,7 +33,6 @@ jobs:
           server: tophat.sunywcc.edu
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_KEY }}
-          delete: 'true'
           uploads: |
             ./ => /home/students/webgroup1/server_impl/build/
           ignore: |
