@@ -14,12 +14,14 @@
 
 <style>
   .root {
+    --border-color: var(--c-neutral-500);
+
     display: flex;
     flex-direction: row;
     align-items: stretch;
     height: 100vh;
     gap: 1px;
-    background-color: var(--c-neutral-600);
+    background-color: var(--border-color);
   }
 
   .left-bar {
@@ -29,10 +31,11 @@
   }
 
   .center {
-    width: 33%;
+    max-width: 33%;
     min-width: 575px;
     flex-grow: 1;
     background-color: var(--c-black);
+    overflow: hidden;
   }
 
   .right-bar {
