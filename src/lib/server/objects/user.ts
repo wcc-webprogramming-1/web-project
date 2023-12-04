@@ -1,4 +1,4 @@
-import type { FrontendDeserializableUser } from "$lib/client/objects/user";
+import type { ClientDeserializableUser } from "$lib/client/objects/user";
 import { Database } from "../database"
 import bcrypt from "bcrypt";
 
@@ -49,7 +49,7 @@ export class ServerUser {
     return new ServerUser(userRow[0]);
   }
 
-  static async loadForFrontend(using: Partial<UserRow>): Promise<FrontendDeserializableUser> {
+  static async loadForClient(using: Partial<UserRow>): Promise<ClientDeserializableUser> {
     const user = await ServerUser.load(using);
 
     return user.serializeForFrontend();
@@ -90,7 +90,7 @@ export class ServerUser {
 
   constructor(private row: UserRow) {}
 
-  serializeForFrontend(): FrontendDeserializableUser {
+  serializeForFrontend(): ClientDeserializableUser {
     return {
       handle: this.handle,
       username: this.username,

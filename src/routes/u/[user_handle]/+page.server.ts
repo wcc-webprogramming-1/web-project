@@ -4,6 +4,6 @@ import { ServerUser } from '$lib/server/objects/user.js';
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params }) {
 	return {
-		self: await ServerUser.loadForFrontend({ handle: params.user_handle })
+		self: await ServerUser.loadForClient({ handle: params.user_handle })
 	};
 }

@@ -1,4 +1,4 @@
-export type FrontendDeserializableUser = {
+export type ClientDeserializableUser = {
   handle: string,
   username: string,
   creation_date: Date,
@@ -7,11 +7,11 @@ export type FrontendDeserializableUser = {
 }
 
 export class ClientUser {
-  static deserialize(user: FrontendDeserializableUser): ClientUser {
+  static deserialize(user: ClientDeserializableUser): ClientUser {
     return new ClientUser(user);
   }
 
-  private constructor(private user: FrontendDeserializableUser) {}
+  private constructor(private user: ClientDeserializableUser) {}
 
   get handle(): string {
     return this.user.handle;
