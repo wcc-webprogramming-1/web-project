@@ -1,0 +1,30 @@
+ - no for you (only following)
+ - dark mode / light mode
+ - notifications
+   - events
+     - someone liked your post
+     - someone shared your post
+     - someone bookmarked your post
+     - someone followed you
+     - someone unfollowed you
+     - someone mentioned you
+ - users can upload photos
+ - profile
+   - users have icons
+   - users have banners
+   - users have bio
+   - edit profile
+   - joined date tag
+   - following & followers
+   - posts & replies merged
+   - media tab
+   - likes tab
+   - name
+   - handle
+ - tweet
+   - save
+   - bookmark
+   - retweet
+   - comment/reply
+   - share
+   - view counter
