@@ -2,12 +2,13 @@
   import Header from '$lib/client/component/header.svelte';
   import UserBanner from '$lib/client/component/userBanner.svelte';
   import UserIcon from '$lib/client/component/userIcon.svelte';
+  import { base } from "$app/paths";
   import type * as Type from './$types'
 
   export let data: Type.PageData;
 </script>
 
-<Header title={data.self.username} description="This is where the post count will go" back_path="/" />
+<Header title={data.self.username} description="This is where the post count will go" back_path="{base}/" />
 
 <div class="page">
   <div class="banner">
