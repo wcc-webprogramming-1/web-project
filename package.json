@@ -24,6 +24,8 @@
 		"@types/bcrypt": "^5.0.2",
 		"@types/ssh2": "^1.11.18",
 		"bcrypt": "^5.1.1",
+		"image-size": "^1.0.2",
+		"image-type": "^5.2.0",
 		"mariadb": "^3.2.2",
 		"ssh2": "^1.14.0"
 	}

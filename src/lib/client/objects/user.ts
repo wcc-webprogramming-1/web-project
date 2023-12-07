@@ -1,9 +1,13 @@
+import type { ClientDeserializableAsset } from "./asset";
+
 export type ClientDeserializableUser = {
   handle: string,
   username: string,
   creation_date: Date,
   id: number,
   bio: string,
+  profile_asset: ClientDeserializableAsset | undefined,
+  banner_asset: ClientDeserializableAsset | undefined,
 }
 
 export class ClientUser {

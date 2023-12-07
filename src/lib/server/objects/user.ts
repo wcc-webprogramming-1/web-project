@@ -1,6 +1,7 @@
 import type { ClientDeserializableUser } from "$lib/client/objects/user";
 import { Database } from "../database"
 import bcrypt from "bcrypt";
+import { ServerAsset } from "./asset";
 
 const PASSWORD_SALT_ROUNDS = 10;
 
@@ -90,13 +91,18 @@ export class ServerUser {
 
   constructor(private row: UserRow) {}
 
-  serializeForFrontend(): ClientDeserializableUser {
+  async serializeForFrontend(): Promise<ClientDeserializableUser> {
+    const profileAsset = this.row.profile_asset_id && await this.loadProfileAsset();
+    const bannerAsset = this.row.banner_asset_id && await this.loadBannerAsset();
+
     return {
       handle: this.handle,
       username: this.username,
       creation_date: this.creationDate,
       id: this.id,
       bio: this.bio,
+      profile_asset: profileAsset && await profileAsset.serializeForFrontend(),
+      banner_asset: bannerAsset && await bannerAsset.serializeForFrontend(),
     }
   }
 
@@ -105,6 +111,20 @@ export class ServerUser {
   get creationDate() { return this.row.creation_date; }
   get id() { return this.row.id; }
   get bio() { return this.row.bio; }
+
+  loadProfileAsset(): Promise<ServerAsset | undefined> {
+    if (this.row.profile_asset_id === undefined)
+      return Promise.resolve(undefined);
+
+    return ServerAsset.load(this.row.profile_asset_id);
+  }
+
+  loadBannerAsset(): Promise<ServerAsset | undefined> {
+    if (this.row.banner_asset_id === undefined)
+      return Promise.resolve(undefined);
+
+    return ServerAsset.load(this.row.banner_asset_id);
+  }
   
   validatePassword(checkPassword: string): Promise<boolean> {
     return bcrypt.compare(checkPassword, this.row.password);
