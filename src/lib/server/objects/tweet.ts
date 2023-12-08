@@ -12,7 +12,6 @@ export type TweetRow = {
     bookmarks: number,
     creation_date: Date,
     userId: number,
-    imageId: number,
     parentId: number,
 }
 
@@ -24,7 +23,6 @@ export type UserConstructionParameters = {
     bookmarks?: number,
     creation_date?: Date,
     userId: number,
-    imageId?: number,
     parentId?: number,
 }
 
@@ -43,18 +41,18 @@ export class ServerTweet {
         return new ServerTweet(tweetRow[0]);
     }
 
+    static async loadForClient(using: Partial<TweetRow>): Promise<ClientDeserializableTweet>{
+        const tweet = await ServerTweet.load(using);
+
+        return tweet.serializeForFrontend();
+    }
+
     static async loadSet(using: Partial<TweetRow>): Promise<ServerTweet[]> {
         const query = `SELECT * from tweets WHERE ${Object.keys(using).map(keys => `${keys} = ?`).join(" AND ")}`;
         const params = Object.values(using);
         const tweetRows = await Database.query<TweetRow>(query,params);
 
         return tweetRows.map(tweet => new ServerTweet(tweet));
-    }
-
-    static async loadForClient(using: Partial<TweetRow>): Promise<ClientDeserializableTweet>{
-        const tweet = await ServerTweet.load(using);
-
-        return tweet.serializeForFrontend();
     }
 
     get id(): number{return this.row.id;}
@@ -65,22 +63,6 @@ export class ServerTweet {
     get creation_date(): Date{return this.row.creation_date;}
     get userId(): number{return this.row.userId;}
     get parentId(): number{return this.row.parentId;}
-
-    async serializeForFrontendComments(): Promise<ClientDeserializableTweetComments> {
-        let user = await this.loadUser();
-        let comments = await this.loadComments()
-
-        return{
-            id: this.id,
-            content: this.content,
-            likes: this.likes,
-            retweets: this.retweets,
-            bookmarks: this.bookmarks,
-            comments: comments.length,
-            creation_date: this.creation_date,
-            user: await user.serializeForFrontend(), 
-        }
-    }
 
     async serializeForFrontend(): Promise<ClientDeserializableTweet>{
         let user = await this.loadUser();
@@ -101,6 +83,22 @@ export class ServerTweet {
         }
     }
 
+    async serializeForFrontendComments(): Promise<ClientDeserializableTweetComments> {
+        let user = await this.loadUser();
+        let comments = await this.loadComments()
+
+        return{
+            id: this.id,
+            content: this.content,
+            likes: this.likes,
+            retweets: this.retweets,
+            bookmarks: this.bookmarks,
+            comments: comments.length,
+            creation_date: this.creation_date,
+            user: await user.serializeForFrontend(), 
+        }
+    }
+
     async loadComments(): Promise<ServerTweet[]> {
         return ServerTweet.loadSet({parentId: this.id});
     }
@@ -117,6 +115,13 @@ export class ServerTweet {
         return ServerUser.load({ id: this.userId });
     }
 
+    async setContent(newContent: string): Promise<void>{
+        await Database.query("UPDATE tweets SET content = ? WHERE id = ?", [newContent, this.id]);
+    }
+
+    async setImage(newImageId: number): Promise<void>{
+        await Database.query("UPDATE tweets_images SET id = ? WHERE image = ?", [this.id, newImageId]);
+    }
 
     constructor(private row: TweetRow) {}
 }
