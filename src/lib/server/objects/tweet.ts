@@ -15,7 +15,7 @@ export type TweetRow = {
     parentId: number,
 }
 
-export type UserConstructionParameters = {
+export type TweetConstructionParameters = {
     id?: number,
     content: string,
     likes?: number,
@@ -98,6 +98,34 @@ export class ServerTweet {
             user: await user.serializeForFrontend(), 
         }
     }
+
+    static async create(constructionParameters: TweetConstructionParameters): Promise<ServerTweet> {
+        let query = "INSERT INTO tweets (";
+        const params: any[] = [];
+    
+        for (const [key, value] of Object.entries(constructionParameters)) {
+          query += `${key}, `;
+
+        params.push(value);
+        }
+    
+        query = query.slice(0, -2);
+    
+        query += ") VALUES (";
+    
+        for (const _ of params) {
+          query += "?, ";
+        }
+    
+        query = query.slice(0, -2);
+    
+        query += ")";
+    
+        const result = await Database.query<TweetRow>(query, params);
+        const tweetRow = await Database.query<TweetRow>("@@IDENTITY");
+    
+        return new ServerTweet(tweetRow[0]);
+      }
 
     async loadComments(): Promise<ServerTweet[]> {
         return ServerTweet.loadSet({parentId: this.id});
