@@ -1,7 +1,7 @@
 import type { ClientDeserializableAsset } from "$lib/client/objects/asset";
 import type { ClientDeserializableTweet, ClientDeserializableTweetComments } from "$lib/client/objects/tweet";
 import { Database } from "../database"
-import { ServerAsset } from "./asset";
+import { ServerAsset, type AssetId } from "./asset";
 import { ServerUser } from "./user";
 
 export type TweetRow = {
@@ -55,6 +55,36 @@ export class ServerTweet {
         return tweetRows.map(tweet => new ServerTweet(tweet));
     }
 
+    static async create(constructionParameters: TweetConstructionParameters): Promise<ServerTweet> {
+        let query = "INSERT INTO tweets (";
+        const params: any[] = [];
+    
+        for (const [key, value] of Object.entries(constructionParameters)) {
+          query += `${key}, `;
+
+        params.push(value);
+        }
+    
+        query = query.slice(0, -2);
+    
+        query += ") VALUES (";
+    
+        for (const _ of params) {
+          query += "?, ";
+        }
+    
+        query = query.slice(0, -2);
+    
+        query += ")";
+    
+        const result = await Database.query<TweetRow>(query, params);
+        const tweetRow = await Database.query<TweetRow>("@@IDENTITY");
+    
+        return new ServerTweet(tweetRow[0]);
+    }
+
+    constructor(private row: TweetRow) {}
+
     get id(): number{return this.row.id;}
     get content(): string{return this.row.content;}
     get likes(): number{return this.row.likes;}
@@ -85,9 +115,10 @@ export class ServerTweet {
 
     async serializeForFrontendComments(): Promise<ClientDeserializableTweetComments> {
         let user = await this.loadUser();
-        let comments = await this.loadComments()
+        let comments = await this.loadComments();
+        const images = await this.loadImages();
 
-        return{
+        return {
             id: this.id,
             content: this.content,
             likes: this.likes,
@@ -96,43 +127,17 @@ export class ServerTweet {
             comments: comments.length,
             creation_date: this.creation_date,
             user: await user.serializeForFrontend(), 
+            parentId: this.parentId,
+            images: images.map(i => i.serializeForFrontend()),
         }
     }
-
-    static async create(constructionParameters: TweetConstructionParameters): Promise<ServerTweet> {
-        let query = "INSERT INTO tweets (";
-        const params: any[] = [];
-    
-        for (const [key, value] of Object.entries(constructionParameters)) {
-          query += `${key}, `;
-
-        params.push(value);
-        }
-    
-        query = query.slice(0, -2);
-    
-        query += ") VALUES (";
-    
-        for (const _ of params) {
-          query += "?, ";
-        }
-    
-        query = query.slice(0, -2);
-    
-        query += ")";
-    
-        const result = await Database.query<TweetRow>(query, params);
-        const tweetRow = await Database.query<TweetRow>("@@IDENTITY");
-    
-        return new ServerTweet(tweetRow[0]);
-      }
 
     async loadComments(): Promise<ServerTweet[]> {
         return ServerTweet.loadSet({parentId: this.id});
     }
 
     async loadImages(): Promise<ServerAsset[]> {
-        const query = `SELECT * from tweets_images WHERE id = ?`
+        const query = `SELECT * from tweets_images WHERE tweetId = ?`
         const result = await Database.query<{ id: number, image: Buffer }>(query, [this.id]);
         const image_array = Promise.all(result.map(row => ServerAsset.load(Array.from(row.image))));
         
@@ -147,9 +152,14 @@ export class ServerTweet {
         await Database.query("UPDATE tweets SET content = ? WHERE id = ?", [newContent, this.id]);
     }
 
-    async setImage(newImageId: number): Promise<void>{
-        await Database.query("UPDATE tweets_images SET id = ? WHERE image = ?", [this.id, newImageId]);
+    async addImage(asset: AssetId): Promise<void> {
+        await Database.query("INSERT INTO tweets_images (tweetId, imageId) VALUES (?, ?)", [
+          this.id,
+          asset
+        ]);
     }
 
-    constructor(private row: TweetRow) {}
+    async removeImage(asset: AssetId): Promise<void>{
+        await Database.query("DELETE FROM tweets_images WHERE tweetId = ? and imageId = ? ",[this.id, asset]);
+    }
 }
