@@ -29,16 +29,8 @@ export type UserConstructionParameters = {
 
 export class ServerUser {
   static async load(using: Partial<UserRow>): Promise<ServerUser> {
-    let query = "SELECT * FROM users WHERE ";
-    const params: any[] = [];
-
-    for (const [key, value] of Object.entries(using)) {
-      query += `${key} = ? AND `;
-      params.push(value);
-    }
-
-    query = query.slice(0, -5);
-
+    const query = `SELECT * FROM users WHERE ${Object.keys(using).map(key => `${key} = ?`).join(" AND ")}`;
+    const params = Object.values(using)
     const userRow = await Database.query<UserRow>(query, params);
 
     if (userRow.length === 0)
