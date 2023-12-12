@@ -62,7 +62,7 @@ export class ServerTweet {
         for (const [key, value] of Object.entries(constructionParameters)) {
           query += `${key}, `;
 
-        params.push(value);
+          params.push(value);
         }
     
         query = query.slice(0, -2);
