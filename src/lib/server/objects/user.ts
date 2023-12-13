@@ -14,6 +14,8 @@ export type UserRow = {
   profile_asset_id: number[] | undefined,
   banner_asset_id: number[] | undefined,
   password: string,
+  following_count:number,
+  follower_count:number
 }
 
 export type UserConstructionParameters = {
@@ -103,6 +105,8 @@ export class ServerUser {
       bio: this.bio,
       profile_asset: profileAsset && await profileAsset.serializeForFrontend(),
       banner_asset: bannerAsset && await bannerAsset.serializeForFrontend(),
+      following_count: this.getFollowingCount.length,
+      follower_count: this.getFollowersCount.length
     }
   }
 
@@ -142,5 +146,37 @@ export class ServerUser {
 
   async setUsername(newUsername: string): Promise<void> {
     await Database.query("UPDATE users SET username = ? WHERE id = ?", [newUsername, this.id]);
+  }
+  //Follower server functions
+  async addFollowing(newFollower: string): Promise<void> {
+    await Database.query("INSERT INTO follows (follower,following) VALUES (?, ?)", [newFollower, this.id]);
+  }
+  
+  async removeFollowing(newFollower: string): Promise<void> {
+    await Database.query("DELETE FROM follows WHERE following = ? AND follower = ?", [newFollower, this.id]);
+  }
+  
+  async loadFollowing(): Promise<ServerUser[]> {
+    const ids = await Database.query<{following: number}>("SELECT following FROM follows WHERE follower = ?", [this.id]);
+    const promises = ids.map(id => ServerUser.load({ id: id.following }))
+
+    return await Promise.all(promises);
+  }
+
+  async loadFollowers(): Promise<ServerUser[]> {
+    const ids = await Database.query<{follower: number}>("SELECT follower FROM follows WHERE following = ?", [this.id]);
+    const promises = ids.map(id => ServerUser.load({id: id.follower}))
+
+    return await Promise.all(promises);
+  }
+
+  async getFollowingCount(){
+    const count = await Database.query("SELECT COUNT(following) FROM follows WHERE follower = ?");
+    return count;
+  }
+
+  async getFollowersCount(){
+    const count = await Database.query("SELECT COUNT(follower) FROM follows WHERE following = ?");
+    return count; 
   }
 }
