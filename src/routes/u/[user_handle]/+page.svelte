@@ -14,7 +14,7 @@
   <div class="banner">
     <UserBanner />
     <div class="icon">
-      <UserIcon />
+      <UserIcon user={data.self} />
     </div>
   </div>
 

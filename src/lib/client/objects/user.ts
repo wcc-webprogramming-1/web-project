@@ -1,4 +1,4 @@
-import type { ClientDeserializableAsset } from "./asset";
+import { ClientAsset, type ClientDeserializableAsset } from "./asset";
 
 export type ClientDeserializableUser = {
   handle: string,
@@ -15,7 +15,16 @@ export class ClientUser {
     return new ClientUser(user);
   }
 
-  private constructor(private user: ClientDeserializableUser) {}
+  private constructor(private user: ClientDeserializableUser) {
+    if (user.profile_asset)
+      this.profilePicture = ClientAsset.deserialize(user.profile_asset);
+
+    if (user.banner_asset)
+      this.bannerPicture = ClientAsset.deserialize(user.banner_asset);
+  }
+
+  public profilePicture: ClientAsset | undefined;
+  public bannerPicture: ClientAsset | undefined;
 
   get handle(): string {
     return this.user.handle;

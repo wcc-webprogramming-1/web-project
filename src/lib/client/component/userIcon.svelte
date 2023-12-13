@@ -1,5 +1,11 @@
+<script lang="ts">
+  import type { ClientUser } from "../objects/user";
+
+  export let user: ClientUser;
+</script>
+
 <img
-  src="https://picsum.photos/500/500"
+  src={user.profilePicture?.url}
   alt="User's icon"
 >
 
