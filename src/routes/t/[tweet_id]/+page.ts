@@ -1,8 +1,8 @@
-import { ClientUser } from '$lib/client/objects/user.js';
+import { ClientTweet } from '$lib/client/objects/tweet.js';
 
 /** @type {import('./$types').PageClientLoad} */
 export async function load({ data }) {
 	return {
-		self: ClientUser.deserialize(data.self),
+		self: ClientTweet.deserialize(data.self),
 	};
 }
