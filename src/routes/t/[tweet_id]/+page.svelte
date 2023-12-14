@@ -5,18 +5,31 @@
     import TweetDate from "$lib/client/component/tweetDate.svelte";
     import TweetImages from "$lib/client/component/tweetImages.svelte";
     import UserBasicView from "$lib/client/component/userBasicView.svelte";
+    import UserHover from "$lib/client/component/userHover.svelte";
+    import { fade } from "svelte/transition";
     import type * as Type from './$types'
+    import * as EasingFunctions from "svelte/easing"
     
     export let data: Type.PageData;
+
+    let is_user_hovered = 0;
 </script>
 
 <Header title="Post" description="" back_path="{base}/"/>
 
 <div class="tweet">
     <div class="userInfo">
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="header">
-            <div>
-                <UserBasicView data={data.self}/>
+            {#if is_user_hovered > 0}
+                <div class="userhover" in:fade={{ delay: 500, duration: 100 }} out:fade={{ duration: 100 }}>
+                    <div class="userhovercontent" on:mouseenter={() => is_user_hovered++} on:mouseleave={() => is_user_hovered--}>
+                        <UserHover self={data.self.author}/>
+                    </div>
+                </div>
+            {/if}
+            <div on:mouseenter={() => is_user_hovered++} on:mouseleave={() => setTimeout(() => is_user_hovered--, 10)}>
+                <UserBasicView data={data.self.author}/>
             </div>
             <div class="right-hand-side">
                 <!--TODO-->
@@ -49,6 +62,17 @@
 </div>
 
 <style>
+    .userhover {
+        position: absolute;
+        height: 0;
+    }
+
+    .userhovercontent {
+        position: relative;
+        top: 25px;
+        left: 5px;
+    }
+
     .separatorLine{
         border-top-color: rgb(119, 124, 128);
         border-top-width: 1px;

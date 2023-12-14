@@ -7,5 +7,6 @@ export async function load({ params }) {
 
     return {
         self: tweetSerialized,
+        maxAge: 60
     }
 }

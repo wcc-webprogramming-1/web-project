@@ -1,17 +1,17 @@
 <script lang="ts">
     import UserIcon from "$lib/client/component/userIcon.svelte";
-    import type { ClientTweet } from "../objects/tweet";
+    import type { ClientUser } from "../objects/user";
 
-    export let data: ClientTweet;
+    export let data: ClientUser;
 </script>
 
 <div class="left-hand-side">
     <div class="icon">
-        <UserIcon user={data.author}/>
+        <UserIcon user={data}/>
     </div>
     <div class="names">
-        <pre class="name">{data.author.username}</pre>
-        <pre class="handle">@{data.author.handle}</pre>
+        <pre class="name">{data.username}</pre>
+        <pre class="handle">@{data.handle}</pre>
     </div>
 </div>
 
