@@ -30,26 +30,24 @@ export type UserConstructionParameters = {
 }
 
 export class ServerUser {
-  static async load(using: Partial<UserRow>): Promise<ServerUser> {
-    let query = "SELECT * FROM users WHERE ";
-    const params: any[] = [];
-
-    for (const [key, value] of Object.entries(using)) {
-      query += `${key} = ? AND `;
-      params.push(value);
-    }
-
-    query = query.slice(0, -5);
-
+  static async loadLossy(using: Partial<UserRow>): Promise<ServerUser | undefined> {
+    const query = `SELECT * FROM users WHERE ${Object.keys(using).map(key => `${key} = ?`).join(" AND ")}`;
+    const params = Object.values(using)
     const userRow = await Database.query<UserRow>(query, params);
-
-    if (userRow.length === 0)
-      throw new Error("User not found");
 
     if (userRow.length > 1)
       throw new Error("Ambiguous Input: Multiple users found");
     
     return new ServerUser(userRow[0]);
+  }
+
+  static async load(using: Partial<UserRow>): Promise<ServerUser> {
+    const user = await ServerUser.loadLossy(using);
+
+    if (user === undefined)
+      throw new Error("User not found");
+
+    return user;
   }
 
   static async loadForClient(using: Partial<UserRow>): Promise<ClientDeserializableUser> {
