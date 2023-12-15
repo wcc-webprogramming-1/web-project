@@ -138,8 +138,9 @@ export class ServerTweet {
 
     async loadImages(): Promise<ServerAsset[]> {
         const query = `SELECT * from tweets_images WHERE tweetId = ?`
-        const result = await Database.query<{ id: number, image: Buffer }>(query, [this.id]);
-        const image_array = Promise.all(result.map(row => ServerAsset.load(Array.from(row.image))));
+        const result = await Database.query<{ tweetId: number, imageId: Buffer }>(query, [this.id]);
+        
+        const image_array = Promise.all(result.map(row => ServerAsset.load([... row.imageId])));
         
         return image_array;
     }
