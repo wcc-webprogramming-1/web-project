@@ -78,7 +78,7 @@ import { ClientUser } from "$lib/client/objects/user";
     min-width: 575px;
     flex-grow: 1;
     background-color: var(--c-black);
-    overflow: hidden;
+    overflow: scroll;
   }
 
   .right-bar {
