@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import CircularStealthButton from "./circularStealthButton.svelte";
   import BackArrow from "./icon/back_arrow.svelte";
 

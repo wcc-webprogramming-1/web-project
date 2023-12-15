@@ -80,7 +80,7 @@ export class ServerAsset {
       height: size.height,
       filepath,
     };
-
+    
     await Database.query(`INSERT INTO asset (
       id,
       publisher,

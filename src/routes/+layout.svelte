@@ -7,8 +7,6 @@ import { ClientUser } from "$lib/client/objects/user";
 
   export let data: Types.PageData;
 
-  console.log(data.session)
-
   if (data.session !== undefined) {
     Session.set({
       isLoggedIn: true,
