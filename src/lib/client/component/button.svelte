@@ -3,7 +3,7 @@
 </script>
 
 <div>
-    <button>{contents}</button>
+    <button on:click>{contents}</button>
 </div>
 
 
@@ -13,7 +13,7 @@
         width: 108px;
         border: 1px solid grey;
         border-radius: 25px;
-        background-color: black;
+        background:transparent;
         color:white;
         font-size:14px;
         font-weight:600;
