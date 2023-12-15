@@ -1,13 +1,16 @@
 <script lang="ts">
-    import LinkButton from "$lib/client/component/linkButton.svelte";
+  import LinkButton from "$lib/client/component/linkButton.svelte";
   import UserIcon from "$lib/client/component/userIcon.svelte";
-import { ClientUser } from "$lib/client/objects/user";
+  import { ClientUser } from "$lib/client/objects/user";
+  import { authServiceWorker, deauthServiceWorker } from "$lib/client/realtime/session";
   import { Session } from "$lib/client/stores/session";
   import type * as Types from "./$types";
 
   export let data: Types.PageData;
 
-  console.log(data.session)
+  if (data.token) {
+    authServiceWorker(data.token);
+  }
 
   if (data.session !== undefined) {
     Session.set({
@@ -22,13 +25,18 @@ import { ClientUser } from "$lib/client/objects/user";
       user: undefined
     });
 
+    deauthServiceWorker();
+
     fetch("/api/v1/logout")
       .catch(() => {
-        if (user !== undefined)
+        if (user !== undefined) {
           Session.set({
             isLoggedIn: true,
             user: user
           });
+
+          authServiceWorker(data.token);
+        }
       })
   }
 </script>
