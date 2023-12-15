@@ -4,10 +4,17 @@
   export let user: ClientUser;
 </script>
 
-<img
-  src={user.profilePicture?.url}
-  alt="User's icon"
->
+{#if user.profilePicture !== undefined}
+  <img
+    src={user.profilePicture.url}
+    alt="User's icon"
+  >
+{:else}
+  <img
+    src="/blankUserIcon.png"
+    alt="User has no icon"
+  >
+{/if}
 
 <style>
   img {
