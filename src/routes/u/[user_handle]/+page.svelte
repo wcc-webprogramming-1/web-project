@@ -9,7 +9,7 @@
   import { Session } from '$lib/client/stores/session';
   import FollowsCount from '$lib/client/component/followsCount.svelte';
     import { ClientUser } from '$lib/client/objects/user';
-
+  
   export let data: Type.PageData;
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 

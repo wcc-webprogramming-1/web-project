@@ -28,11 +28,12 @@
 <section>
     <div>
         {#each fake_following as following }
-            <div class = "accountList">
+            <a href="{base}/u/{data.self.handle}" class = "userRedirect"><div class = "accountList">
                 <UserBioView data = {following}/>
                 <span><Button contents = {"Following"}/></span>
-            </div>
+            </div></a>
         {/each}
+
     </div>
 </section>
 
@@ -73,5 +74,8 @@
     }
     .accountList:hover{
         background-color: var(--c-stone-800);
+    }
+    .userRedirect{
+        text-decoration: none;
     }
 </style>
