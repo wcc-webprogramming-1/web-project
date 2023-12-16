@@ -5,7 +5,7 @@
     import TweetDate from "$lib/client/component/tweetDate.svelte";
     import TweetImages from "$lib/client/component/tweetImages.svelte";
     import UserBasicView from "$lib/client/component/userBasicView.svelte";
-    import UserHover from "$lib/client/component/userHover.svelte";
+    import UserHover from "$lib/client/component/userDetail.svelte";
     import { fade } from "svelte/transition";
     import type * as Type from './$types'
     import * as EasingFunctions from "svelte/easing"
@@ -15,7 +15,7 @@
     let is_user_hovered = 0;
 </script>
 
-<Header title="Post" description="" back_path="{base}/"/>
+<Header title="Post" description=""/>
 
 <div class="tweet">
     <div class="userInfo">

@@ -37,6 +37,9 @@ export class ServerUser {
 
     if (userRow.length > 1)
       throw new Error("Ambiguous Input: Multiple users found");
+
+    if (userRow.length === 0)
+      return undefined;
     
     return new ServerUser(userRow[0]);
   }

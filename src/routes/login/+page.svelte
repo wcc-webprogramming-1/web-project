@@ -4,6 +4,7 @@
   import { goto } from "$app/navigation";
   import { ClientUser } from "$lib/client/objects/user";
     import { Session } from "$lib/client/stores/session";
+    import { loginPasswordField, loginUserField } from "$lib/client/stores/loginuserfield";
 
   function asAny(value: any): any {
     return value;
@@ -25,8 +26,8 @@
       }
     }
   }}>
-    <input name="handle" type="text" placeholder="Handle" />
-    <input name="password" type="password" placeholder="Password" />
+    <input name="handle" bind:value={$loginUserField} type="text" placeholder="Handle" />
+    <input name="password" bind:value={$loginPasswordField} type="password" placeholder="Password" />
     <button type="submit">Login</button>
   </form>
 </div>

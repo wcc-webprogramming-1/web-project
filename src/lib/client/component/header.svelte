@@ -5,7 +5,6 @@
 
   export let title: string;
   export let description: string;
-  export let back_path: string;
 </script>
 
 <main>
@@ -14,7 +13,7 @@
     size={40}
     icon_normal_color="white"
     button_hover_color="white"
-    on:click={() => goto(back_path)}
+    on:click={() => history.back()}
   />
   <div class="text">
     <pre class="title">{title}</pre>

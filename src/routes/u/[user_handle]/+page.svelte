@@ -16,7 +16,7 @@
   $: is_self = $Session.isLoggedIn && $Session.user.id == data.self.id;
 </script>
 
-<Header title={data.self.username} description="This is where the post count will go" back_path="{base}/" />
+<Header title={data.self.username} description="This is where the post count will go" />
 
 <div class="page">
   <div class="banner">
