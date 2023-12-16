@@ -36,6 +36,7 @@
 
     .name{
         margin: 0;
+        font-weight:700;
     }
     .bio{
         font-size:12px;

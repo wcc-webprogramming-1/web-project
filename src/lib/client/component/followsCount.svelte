@@ -1,29 +1,30 @@
 <script lang="ts">
-    export let following_count: number;
-    export let followers_count: number;
+    import { base } from "$app/paths";
+    import type { ClientUser } from "../objects/user";
+    
+    export let user: ClientUser;
 </script>
 
 <div>
-    <a href="#"><span style="color:white">{following_count}</span> Following</a> 
-    <a href="#"><span style="color:white">{followers_count}</span> Followers</a>
+    <a href="{base}/u/{user.handle}/following"><span style="color:white">{user.followingCount}</span> Following</a> 
+    <a href="{base}/u/{user.handle}/followers"><span style="color:white">{user.followerCount}</span> Followers</a>
 </div>
 
 <style>
     span{
-        font-weight:700;
+        font-weight: 700;
     }
     div{
-        display:flex;
+        display: flex;
         flex-direction: row;
-        gap:12px;
+        gap: 12px;
     }
     a{
         text-decoration: none;
-        color:gray;
+        color: var(--c-zinc-500);
     }
     a:hover{
-        text-decoration:underline;
+        text-decoration: underline;
     }
     
-
 </style>

@@ -8,9 +8,10 @@
   import type * as Type from './$types'
   import { Session } from '$lib/client/stores/session';
   import FollowsCount from '$lib/client/component/followsCount.svelte';
+    import { ClientUser } from '$lib/client/objects/user';
 
   export let data: Type.PageData;
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];4
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   $: is_self = $Session.isLoggedIn && $Session.user.id == data.self.id;
 </script>
@@ -30,10 +31,9 @@
     <h1>{data.self.username}</h1>
     <h2>@{data.self.handle}</h2>
     <p class="bio">{data.self.bio}</p>
-    <p class = "joindate"><CalendarIcon size={20} color="gray-500"/>Joined {months[data.self.creationDate.getMonth()]} {data.self.creationDate.getFullYear()}</p>
+    <p class = "joindate"><CalendarIcon size={20} color="zinc-500"/>Joined {months[data.self.creationDate.getMonth()]} {data.self.creationDate.getFullYear()}</p>
     <p class="followsCount"><FollowsCount
-      followers_count={data.self.followerCount}
-      following_count={data.self.followingCount}  
+      user={data.self}
     /></p>
   </div>
 </div>
@@ -61,10 +61,10 @@
   }
   
   .followbutton{
-    display:flex;
-    position:relative;
-    left:425px;
-    bottom:65px;
+    display: flex;
+    position: relative;
+    left: 425px;
+    bottom: 65px;
   }
 
   .content {
@@ -88,21 +88,21 @@
   }
 
   .bio {
-    color:white;
+    color: var(--c-white);
     font-size: 15px;
     font-weight: 400;
-    margin-top:12px;
+    margin-top: 12px;
   }
 
   .joindate {
     font-size: 15px;
     font-weight: 400;
-    color:grey;
+    color: var(--c-zinc-500);
     margin-top: 15px;
-    display:flex;
-    gap:3px;
+    display: flex;
+    gap: 3px;
   }
   .followsCount{
-    font-size:15px;
+    font-size: 15px;
   }
 </style>

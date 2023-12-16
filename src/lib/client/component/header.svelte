@@ -47,7 +47,7 @@
   .description {
     font-size: 14px;
     font-weight: 400;
-    color: var(--c-white);
+    color: var(--c-zinc-500);
     margin: 0;
   }
 </style>
