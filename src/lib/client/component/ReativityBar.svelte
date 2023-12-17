@@ -3,6 +3,8 @@
     import Comment from "./icon/comment.svelte";
     import Like from "./icon/like.svelte";
     import Retweet from "./icon/retweet.svelte";
+    import CircularStealthButton from "./circularStealthButton.svelte";
+
 
     export let comment_amount: number;
     export let retweet_amount: number;
@@ -35,22 +37,43 @@
 
 <div class="bar">
     <div>
-        <Comment size={20} color="gray-200"/>
+        <CircularStealthButton
+            icon={Comment}
+            size={30}
+            icon_normal_color="white"
+            button_hover_color="white"
+        />
         <pre class="number">{comment_amount_text}</pre>
     </div>
 
     <div>
-        <Retweet size={20} color="gray-200"/>
+        <CircularStealthButton
+            icon={Retweet}
+            size={30}
+            icon_normal_color="white"
+            button_hover_color="white"
+        />
         <pre class="number">{retweet_amount_text}</pre>
     </div>
 
     <div>
-        <Like size={20} color="gray-200"/>
+        <CircularStealthButton
+            icon={Like}
+            size={30}
+            icon_normal_color="white"
+            button_hover_color="white"
+            on:click()
+        />
         <pre class="number">{like_amount_text}</pre>
     </div>
 
     <div>
-        <Bookmark size={20} color="gray-200"/>
+        <CircularStealthButton
+            icon={Bookmark}
+            size={30}
+            icon_normal_color="white"
+            button_hover_color="white"
+        />
         <pre class="number">{bookmark_amount_text}</pre>
     </div>
 </div>

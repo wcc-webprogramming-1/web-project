@@ -3,15 +3,17 @@
     import ReativityBar from "$lib/client/component/ReativityBar.svelte";
     import Header from "$lib/client/component/header.svelte";
     import TweetDate from "$lib/client/component/tweetDate.svelte";
-    import TweetImages from "$lib/client/component/tweetImages.svelte";
     import UserBasicView from "$lib/client/component/userBasicView.svelte";
     import UserHover from "$lib/client/component/userHover.svelte";
     import { fade } from "svelte/transition";
     import type * as Type from './$types'
-    import * as EasingFunctions from "svelte/easing"
+    import MoreOptions from "$lib/client/component/icon/more_options.svelte";
+    import CircularStealthButton from "$lib/client/component/circularStealthButton.svelte";
+    import ImageFormating from "$lib/client/component/ImageFormating.svelte";
     
     export let data: Type.PageData;
 
+    let tweet_image_count = data.self.images.length;
     let is_user_hovered = 0;
 </script>
 
@@ -32,8 +34,12 @@
                 <UserBasicView data={data.self.author}/>
             </div>
             <div class="right-hand-side">
-                <!--TODO-->
-                <pre>A</pre>
+                <CircularStealthButton
+                    icon={MoreOptions}
+                    size={30}
+                    icon_normal_color="white"
+                    button_hover_color="white"
+                />
             </div>
         </div>
     </div>
@@ -42,13 +48,11 @@
         {#if data.self.content !== ""}
         <div class="tweetContent">{data.self.content}</div>
         {/if}
-
-        <!-- TODO -->
-        {#if data.self.images.length !== 0}
-        <TweetImages user_asset={data.self.images[0]}/>
-        <h1>DO NOT SUPPORT 4 PICTURES YET, FIX IT</h1>
+    </div>
+    <div>
+        {#if tweet_image_count !== 0}
+        <ImageFormating user_asset={data.self.images} image_count={tweet_image_count}/>
         {/if}
-
     </div>
 
     <div>
@@ -59,6 +63,9 @@
 
     <ReativityBar comment_amount={data.self.getCommentCount()} retweet_amount={data.self.retweets}
     like_amount={data.self.likes} bookmark_amount={data.self.bookmarks} compress />
+
+    <div role="separator" class="separatorLine"/>
+
 </div>
 
 <style>
@@ -93,12 +100,6 @@
         display: flex;
         gap: 10px;
     }
-
-    /* .tweetInfo{
-        margin: 0;
-        border: 0;
-        padding-top: 0;
-    } */
 
     .tweetContent{
         color: white;
