@@ -59,12 +59,12 @@ export class ClientUser {
   async loadFollowing(){
     let response = await fetch(`api/v1/user/${this.id}/following`);
     const data = await response.json();
-    return data.map((serialized: any) => ClientUser.deserialize(serialized));
+    return <ClientUser[]> data.map((serialized: any) => ClientUser.deserialize(serialized));
   }
 
   async loadFollowers(){
     let response = await fetch(`api/v1/user/${this.id}/followers`);
     const data = await response.json();
-    return data.map((serialized: any) => ClientUser.deserialize(serialized));
+    return <ClientUser[]> data.map((serialized: any) => ClientUser.deserialize(serialized));
   }
 }

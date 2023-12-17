@@ -19,7 +19,7 @@
 <style>
 
     .icon {
-        padding-bottom:30px;
+        padding-bottom:36px;
         width: 50px;
         height: 50px;
     }
@@ -36,10 +36,10 @@
 
     .name{
         margin: 0;
+        font-weight: 700;
     }
     .bio{
-        font-size:12px;
-
+        font-size: 13px;
     }
 
     .left-hand-side {
