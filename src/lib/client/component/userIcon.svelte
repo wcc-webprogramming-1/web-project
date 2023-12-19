@@ -1,20 +1,21 @@
 <script lang="ts">
-    import { fade } from "svelte/transition";
+  import { fade } from "svelte/transition";
   import type { ClientUser } from "../objects/user";
-    import Lock from "./icon/lock.svelte";
+  import Lock from "./icon/lock.svelte";
+    import type { ClientAsset } from "../objects/asset";
 
-  export let user: ClientUser | undefined;
+  export let asset: ClientAsset | undefined;
 
   export let locked: boolean = false;
   export let locked_open: boolean = false;
 </script>
 
 <div class="wrap" class:locked>
-  {#if user?.profilePicture !== undefined}
+  {#if asset !== undefined}
     <img
       out:fade={{ duration: 100, delay: 100 }}
       in:fade={{ duration: 100 }}
-      src={user.profilePicture.url}
+      src={asset.url}
       alt="User's icon"
     >
   {:else}

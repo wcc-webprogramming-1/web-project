@@ -13,6 +13,11 @@
   import type * as Types from "./$types";
     import { crossfade, fade } from "svelte/transition";
     import { circInOut, expoInOut } from "svelte/easing";
+    import LeftBarItem from "$lib/client/component/leftBarItem.svelte";
+    import Home from "$lib/client/component/icon/home.svelte";
+    import Bell from "$lib/client/component/icon/bell.svelte";
+    import Bookmark from "$lib/client/component/icon/bookmark.svelte";
+    import Profile from "$lib/client/component/icon/profile.svelte";
 
   const [cross_out, cross_in] = crossfade({ duration: 500 });
 
@@ -128,7 +133,18 @@
 
 <div class="root">
   <div class="left-bar">
-
+    <LeftBarItem path="/" text="Home" icon={Home} />
+    {#if $Session.isLoggedIn}
+      <div in:fade={{ duration: 100 }} out:fade={{ duration: 100 }}>
+        <LeftBarItem path="/bookmarks" text="Bookmarks" icon={Bookmark} />
+      </div>
+      <div in:fade={{ duration: 100 }} out:fade={{ duration: 100 }}>
+        <LeftBarItem path="/events" text="Notifications" icon={Bell} />
+      </div>
+      <div in:fade={{ duration: 100 }} out:fade={{ duration: 100 }}>
+        <LeftBarItem path="/u/{$Session.user.handle}" text="Profile" icon={Profile} />
+      </div>
+    {/if}
   </div>
 
   <div class="center">
@@ -188,6 +204,9 @@
     width: 33%;
     flex-grow: 1;
     background-color: var(--c-neutral-900);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .center {

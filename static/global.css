@@ -14,7 +14,7 @@ html {
   color: #333;
 }
 
-pre, h1, h2 {
+* {
   font-family: 'Inter', sans-serif;
 }
 

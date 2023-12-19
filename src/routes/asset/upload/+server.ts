@@ -3,13 +3,13 @@ import { decodeAssetId } from "$lib/util/assetId";
 
 /** @type {import("./$types").RequestHandler} */
 export async function PUT(evt) {
-  const body = await evt.request.body?.getReader().read();
+  const body = new Uint8Array(await evt.request.arrayBuffer());
 
-  if (body === undefined || body.value === undefined)
+  if (body === undefined)
     return new Response(JSON.stringify({ type: "error", error: "No Body" }), { status: 400 });
 
   //TODO: proper publisher id!!!
-  const asset = await ServerAsset.create(body.value!, 0, evt.url.searchParams.get("name") ?? "unnamed", evt.url.searchParams.get("alt_text") ?? undefined);
+  const asset = await ServerAsset.create(body, 0, evt.url.searchParams.get("name") ?? "unnamed", evt.url.searchParams.get("alt_text") ?? undefined);
 
   return new Response(
     JSON.stringify(asset.serializeForFrontend()),

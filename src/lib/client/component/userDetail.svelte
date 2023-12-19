@@ -27,10 +27,10 @@
 
 <main>
   <div class="banner">
-    <UserBanner />
+    <UserBanner asset={self?.bannerPicture} />
     <div class="iconandaction">
       <div class="icon">
-        <UserIcon user={self} {locked} {locked_open} />
+        <UserIcon asset={self?.profilePicture} {locked} {locked_open} />
       </div>
       <div class="parentprovider">
         <slot />
@@ -112,7 +112,7 @@
     display: flex;
     flex-direction: column;
     gap: 0px;
-    height: 150px;
+    height: 161px;
     border-radius: 15px;
     overflow: hidden;
   }
@@ -175,6 +175,7 @@
     text-decoration: none;
     position: absolute;
     top: 0;
+    font-weight: 700;
   }
 
   .name:hover {

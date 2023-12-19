@@ -14,7 +14,7 @@ const config = {
 		adapter: adapter(),
 
 		paths: {
-			base: process.env.IS_PRODUCTION == "true" ? "/~webgroup1" : ""
+			base: process.env.IS_PRODUCTION == "true" ? "/webgroup1" : ""
 		}
 	}
 };
