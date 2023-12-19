@@ -11,13 +11,32 @@
     import CircularStealthButton from "$lib/client/component/circularStealthButton.svelte";
     import ImageFormating from "$lib/client/component/ImageFormating.svelte";
     import Post from "$lib/client/component/post.svelte";
-    import Comment from "$lib/client/component/icon/comment.svelte";
     import UserIcon from "$lib/client/component/userIcon.svelte";
-    
+    import { ClientTweet } from "$lib/client/objects/tweet";
     export let data: Type.PageData;
+
+    let comments = data.comments;
+
+    async function insertComment(reply_content: string){
+        let response = await fetch("/api/v1/tweet", {
+            method: "POST",
+            body: JSON.stringify({
+                content: reply_content,
+                parentId: data.self.id,
+            })
+        });
+
+        let responseSerialized = await response.json();
+        let responseDesirialized = ClientTweet.deserialize(responseSerialized);
+
+        comments = [ responseDesirialized, ...comments ];
+        comment_count++;
+    }
 
     let tweet_image_count = data.self.images.length;
     let is_user_hovered = 0;
+    let reply_content: string = "";
+    let comment_count: number = data.self.getCommentCount();
 </script>
 
 
@@ -66,27 +85,113 @@
         
     <div role="separator" class="separatorLine"/>
 
-    <ReativityBar comment_amount={data.self.getCommentCount()} retweet_amount={data.self.retweets}
+    <ReativityBar comment_amount={comment_count} retweet_amount={data.self.retweets}
     like_amount={data.self.likes} bookmark_amount={data.self.bookmarks} compress />
 
     <div role="separator" class="separatorLine"/>
 
-    <!--
+    
     <div class="wrapper">
-        <div class="icon">
-            <UserIcon user={data.self.author}/>
-        </div>
-        <div>
-            <input type="text">
-            <input type="submit">
+        <div class="wrapperTextBox">
+            <div class="icon-textBox">
+                <div class="icon">
+                    <UserIcon user={data.self.author}/>
+                </div>
+                <input type="text" bind:value={reply_content} class="textBox" placeholder="Post your reply">
+            </div>
+            <div>
+                <input type="submit" value="Reply" on:click={() => insertComment(reply_content)}>
+            </div>
         </div>
     </div>
-     -->
 
-    <Post comment={data.self} tweet_image_count={data.self.images.length} />
+    <div role="separator" class="separatorFullLine"/>
+    
+     {#each comments as comment}
+        <Post comment={comment} tweet_image_count={comment.images.length} />
+     {/each}
+    
 </div>
 
+<!--
+    <div class="replyName">
+        Replying to 
+        <div class="authorHandle">
+            @{data.self.author.handle}
+        </div>
+    </div>
+-->
+
 <style>
+    input[type=submit]{
+        background-color: var(--c-blue-500);
+        border: 2px solid var(--c-blue-600);
+        color: white;
+        padding: 12px;
+        padding-left: 24px;
+        padding-right: 24px;
+        text-align: center;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        font-weight: bold;
+        min-height: 36px;
+        border-bottom-left-radius: 9999px;
+        border-bottom-right-radius: 9999px;
+        border-top-left-radius: 9999px;
+        border-top-right-radius: 9999px;
+        
+    }
+
+    .icon-textBox {
+        display: flex;
+        flex-direction: row;
+    }
+
+    input[type=text] {
+        background-color: var(--c-black-600);
+        border: 0;
+        outline: none;
+        color: white;
+        font-size: large;
+    }
+
+    input::placeholder {
+        font-size: large;
+        opacity: 0.5;
+        color: var(--c-gray-300);
+    }
+
+    .replyName {
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        padding-left: 60px;
+
+        gap: 5px;
+    }
+
+    .textBox {
+        width: max-content;
+        height: max-content;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+    }
+    
+
+    .separatorFullLine {
+        border-top-color: rgb(119, 124, 128);
+        border-top-width: 1px;
+        border-top-style: solid;
+        margin: 0;
+        padding: 0;
+        width: calc(100% + 40px);
+        position: relative;
+        right: 20px;
+    }
+
     .icon {
         width: 50px;
         height: 50px;
@@ -94,10 +199,17 @@
         border-radius: 999px;
     }
 
-    .wrapper {
+    .wrapperTextBox {
         display: flex;
         flex-direction: row;
         background: black;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+        border: 0;
+
+        gap: 10px;
     }
 
     .userhover {

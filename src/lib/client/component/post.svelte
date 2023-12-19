@@ -113,6 +113,11 @@
         border-top-color: rgb(119, 124, 128);
         border-top-width: 1px;
         border-top-style: solid;
+        margin: 0;
+        padding: 0;
+        width: calc(100% + 40px);
+        position: relative;
+        right: 20px;
     }
 
     .content {
