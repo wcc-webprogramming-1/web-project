@@ -146,7 +146,7 @@
           </UserDetail>
         {:else}
           {#if $page.url.pathname.endsWith("/login") || animating_login}
-            <UserDetail self={user} locked={!animating_login} {locked_open}>
+            <UserDetail self={user} handle={$loginUserField} locked={!animating_login} {locked_open}>
               {#if animating_login}
                 <div in:fade={{ duration: 450, easing: circInOut }}>
                   <Button variant="caution" contents="Logout" on:click={() => {
@@ -169,11 +169,6 @@
 </div>
 
 <style>
-  .userinfowrapper {
-    position: absolute;
-    top: 8px;
-  }
-
   .user {
     margin: 8px;
   }

@@ -6,7 +6,7 @@
   import UserBanner from "./userBanner.svelte";
   import UserBasicView from "./userBasicView.svelte";
   import UserIcon from "./userIcon.svelte";
-    import { fade } from "svelte/transition";
+  import { fade } from "svelte/transition";
 
   export let self: ClientUser | undefined;
   export let handle: string | undefined = undefined;
@@ -22,7 +22,7 @@
 
   $: height = 50 + (self
     ? (22 * self.bio.split("\n").length) + 10
-    : 0);
+    : 102);
 </script>
 
 <main>
@@ -37,19 +37,19 @@
       </div>
     </div>
   </div>
-  <div class="content" style="height: {50 + (22 * (self?.bio?.split("\n")?.length ?? -10))}px;">
+  <div class="content" style="height: {height}px;">
     <div class="names">
       {#if self !== undefined}
         <a class="name" out:fade={{ duration: 100 }} in:fade={{ duration: 100 }} href="{base}/u/{self.handle}">{self.username}</a>
         <pre class="handle" out:fade={{ duration: 100 }} in:fade={{ duration: 100 }}>@{self.handle}</pre>
       {:else}
         <div class="none-name" out:fade={{ duration: 100 }} in:fade={{ duration: 100 }} />
-        <div class="none-handlewrap" out:fade={{ duration: 100 }} in:fade={{ duration: 100 }}>
+        <div class="none-handlewrap">
           {#if handle == undefined || handle == ""}
-            <pre class="none-handleat">@</pre>
-            <div class="none-handle" />
+            <pre class="none-handleat" out:fade={{ duration: 100, delay: 100 }} in:fade={{ duration: 100 }}>@</pre>
+            <div class="none-handle" out:fade={{ duration: 100, delay: 100 }} in:fade={{ duration: 100 }} />
           {:else}
-            <pre class="none-handleat">@{handle}</pre>
+            <pre class="none-handleat" out:fade={{ duration: 100 }} in:fade={{ duration: 100 }}>@{handle}</pre>
           {/if}
         </div>
       {/if}
@@ -78,15 +78,15 @@
   .none-handleat {
     margin: 0;
 
-    position: relative;
+    position: absolute;
     top: -2px;
 
     color: var(--c-stone-500);
   }
 
   .none-handle {
-    position: relative;
-    /* right: 3px; */
+    position: absolute;
+    left: 20px;
     width: 90px;
     height: 22px;
     background-color: var(--c-stone-800);
@@ -133,6 +133,7 @@
     border-radius: 999px;
     display: flex;
     flex-direction: row;
+    background-color: black;
   }
 
   .bio {
@@ -149,6 +150,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
+    top: 50px;
   }
 
   .none-bio {
