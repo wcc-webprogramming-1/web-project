@@ -62,7 +62,6 @@
             size={30}
             icon_normal_color="white"
             button_hover_color="white"
-            on:click()
         />
         <pre class="number">{like_amount_text}</pre>
     </div>

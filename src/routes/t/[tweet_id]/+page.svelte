@@ -10,6 +10,9 @@
     import MoreOptions from "$lib/client/component/icon/more_options.svelte";
     import CircularStealthButton from "$lib/client/component/circularStealthButton.svelte";
     import ImageFormating from "$lib/client/component/ImageFormating.svelte";
+    import Post from "$lib/client/component/post.svelte";
+    import Comment from "$lib/client/component/icon/comment.svelte";
+    import UserIcon from "$lib/client/component/userIcon.svelte";
     
     export let data: Type.PageData;
 
@@ -17,7 +20,9 @@
     let is_user_hovered = 0;
 </script>
 
+
 <Header title="Post" description="" back_path="{base}/"/>
+
 
 <div class="tweet">
     <div class="userInfo">
@@ -66,9 +71,35 @@
 
     <div role="separator" class="separatorLine"/>
 
+    <!--
+    <div class="wrapper">
+        <div class="icon">
+            <UserIcon user={data.self.author}/>
+        </div>
+        <div>
+            <input type="text">
+            <input type="submit">
+        </div>
+    </div>
+     -->
+
+    <Post comment={data.self} tweet_image_count={data.self.images.length} />
 </div>
 
 <style>
+    .icon {
+        width: 50px;
+        height: 50px;
+        outline: 4px solid black;
+        border-radius: 999px;
+    }
+
+    .wrapper {
+        display: flex;
+        flex-direction: row;
+        background: black;
+    }
+
     .userhover {
         position: absolute;
         height: 0;
@@ -80,13 +111,13 @@
         left: 5px;
     }
 
-    .separatorLine{
+    .separatorLine {
         border-top-color: rgb(119, 124, 128);
         border-top-width: 1px;
         border-top-style: solid;
     }
 
-    .tweet{
+    .tweet {
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -94,21 +125,15 @@
         padding-right: 20px;
     }
 
-    .userInfo{
+    .userInfo {
         margin: 0;
         border: 0;
         display: flex;
         gap: 10px;
     }
 
-    .tweetContent{
+    .tweetContent {
         color: white;
-    }
-
-    pre {
-        color: white;
-        margin: 0;
-        border: 0;
     }
 
     .header {

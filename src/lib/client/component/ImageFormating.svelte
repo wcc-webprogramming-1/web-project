@@ -4,13 +4,12 @@
   export let user_asset: ClientAsset[];
   export let image_count: number;
 
-  let images = user_asset.sort(() => Math.floor(Math.random() * 3) - 1);
 </script>
 
 <div class="image-wrapper">
   {#if image_count === 1}
     <img class="one-image"
-    src={images[0].url}
+    src={user_asset[0].url}
     alt="Picure"
     >
   {:else}
@@ -18,11 +17,11 @@
     {#if image_count < 3}
       <div class="images-2">
         <img class="column-left"
-          src={images[0].url}
+          src={user_asset[0].url}
           alt="Picure"
         >
         <img class="column-right"
-          src={images[1].url}
+          src={user_asset[1].url}
           alt="Picure"
         >
       </div>
@@ -30,17 +29,17 @@
       <div class="images-3">
         <div class="column-single">
           <img class="single-picture"
-          src={images[0].url}
+          src={user_asset[0].url}
           alt="Picure"
           >
         </div>
         <div class="column-split">
           <img class="row-1"
-            src={images[1].url}
+            src={user_asset[1].url}
             alt="Picure"
           >
           <img class="row-2"
-            src={images[2].url}
+            src={user_asset[2].url}
             alt="Picure"
           >
         </div>
@@ -50,21 +49,21 @@
       <div class="images-4">
         <div class="row-1">
           <img class="column-1"
-            src={images[0].url}
+            src={user_asset[0].url}
             alt="Picure"
           >
           <img class="column-2"
-            src={images[1].url}
+            src={user_asset[1].url}
             alt="Picure"
           >
         </div>
         <div class="row-2">
           <img class="column-1"
-            src={images[2].url}
+            src={user_asset[2].url}
             alt="Picure"
           >
           <img class="column-2"
-            src={images[3].url}
+            src={user_asset[3].url}
             alt="Picure"
           >
         </div>
