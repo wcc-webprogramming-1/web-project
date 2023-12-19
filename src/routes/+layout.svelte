@@ -8,6 +8,7 @@
   import UserIcon from "$lib/client/component/userIcon.svelte";
   import { ClientUser } from "$lib/client/objects/user";
     import { loginPasswordField, loginUserField } from "$lib/client/stores/loginuserfield";
+  import { authServiceWorker, deauthServiceWorker } from "$lib/client/realtime/session";
   import { Session } from "$lib/client/stores/session";
     import { onMount } from "svelte";
   import type * as Types from "./$types";
@@ -22,6 +23,10 @@
   const [cross_out, cross_in] = crossfade({ duration: 500 });
 
   export let data: Types.PageData;
+
+  if (data.token) {
+    authServiceWorker(data.token);
+  }
 
   if (data.session !== undefined) {
     Session.set({
@@ -118,15 +123,19 @@
       user: undefined
     });
 
+    deauthServiceWorker();
     animating_login = false;
 
     fetch("/api/v1/logout")
       .catch(() => {
-        if (user !== undefined)
+        if (user !== undefined) {
           Session.set({
             isLoggedIn: true,
             user: user
           });
+
+          authServiceWorker(data.token);
+        }
       })
   }
 </script>
