@@ -4,5 +4,6 @@ import { ClientTweet } from '$lib/client/objects/tweet.js';
 export async function load({ data }) {
 	return {
 		self: ClientTweet.deserialize(data.self),
+		comments: data.commentArray.map(comment => ClientTweet.deserialize(comment)),
 	};
 }

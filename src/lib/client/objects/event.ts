@@ -17,16 +17,15 @@ export type ClientDeserializableEvent = {
   actor: ClientDeserializableUser,
   type: EventType,
   subject: ClientDeserializableUser,
-  time: Date,
+  time: number,
   post: ClientDeserializableTweet | undefined,
 }
 
 export class ClientEvent {
   static deserialize(event: ClientDeserializableEvent): ClientEvent {
-    return new ClientEvent({
-      ...event,
-      time: new Date(+event.time),
-    });
+    console.log(event);
+
+    return new ClientEvent(event);
   }
 
   constructor(
@@ -43,5 +42,5 @@ export class ClientEvent {
 
   get id() { return this.event.id; }
   get type() { return this.event.type; }
-  get time() { return this.event.time; }
+  get time() { return new Date(this.event.time); }
 }

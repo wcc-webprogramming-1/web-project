@@ -29,6 +29,7 @@
     }
 
     .handle {
+        color: var(--c-zinc-500);
         font-size: 12px;
         margin: 0;
     }
@@ -44,7 +45,7 @@
         display: flex;
         flex-direction: row;
         gap: 10px;
-        align-items: center;
+        align-items: self-start;
     }
     
 </style>

@@ -29,6 +29,7 @@
     justify-content: start;
     height: 66px;
     padding-left: 12px;
+    position: sticky;
   }
 
   .text {

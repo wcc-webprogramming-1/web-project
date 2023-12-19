@@ -77,12 +77,18 @@ export class ServerTweet {
     
         query += ")";
     
-        const result = await Database.query<TweetRow>(query, params);
-        const tweetRow = await Database.query<TweetRow>("@@IDENTITY");
-    
-        return new ServerTweet(tweetRow[0]);
-    }
+        const id = await Database.withConnection(async c => {
+            await c.beginTransaction();
+            await c.query(query, params);
+            const r = await c.query("SELECT @@IDENTITY as TweetId");
+            await c.commit();
 
+            return r[0].TweetId;
+        });
+
+        return new ServerTweet(await ServerTweet.load({ id }));
+    }
+    
     constructor(private row: TweetRow) {}
 
     get id(): number{return this.row.id;}

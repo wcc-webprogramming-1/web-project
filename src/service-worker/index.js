@@ -165,3 +165,7 @@ function handleMessage(content) {
 
   
 }
+
+sw.addEventListener("install", () => {
+  sw.clients.claim();
+})

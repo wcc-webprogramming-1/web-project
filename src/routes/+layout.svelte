@@ -33,6 +33,11 @@
       isLoggedIn: true,
       user: ClientUser.deserialize(data.session)
     });
+  } else {
+    Session.set({
+      isLoggedIn: false,
+      user: undefined,
+    })
   }
 
   let user: ClientUser | undefined = undefined;

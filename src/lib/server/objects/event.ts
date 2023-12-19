@@ -21,6 +21,14 @@ export type EventConstructionParameters = {
 }
 
 export class ServerEvent {
+  static async loadTimeframe(filter: Partial<EventRow>, start: Date, end: Date): Promise<ServerEvent[]> {
+    const query = `SELECT * FROM events WHERE ${Object.keys(filter).map(key => `${key} = ?`).join(" AND ")} AND time BETWEEN ? AND ?`;
+    const params = [...Object.values(filter), start, end];
+    const eventRows = await Database.query<EventRow>(query, params);
+
+    return eventRows.map(row => new ServerEvent(row));
+  }
+
   static async loadLossy(using: Partial<EventRow>): Promise<ServerEvent | undefined> {
     const query = `SELECT * FROM events WHERE ${Object.keys(using).map(key => `${key} = ?`).join(" AND ")}`;
     const params = Object.values(using)
@@ -72,10 +80,18 @@ export class ServerEvent {
     query += keys.map(() => "?").join(", ");
     query += ")";
 
-    const result = await Database.query(query, values);
-    const row = await Database.query<EventRow>("@@IDENTITY");
+    const id = await Database.withConnection(async c => {
+      await c.beginTransaction();
+      await c.query(query, values);
 
-    return new ServerEvent(row[0]);
+      const r = await c.query<{ EventId: number }[]>("SELECT @@IDENTITY AS EventId");
+
+      await c.commit();
+
+      return r;
+    })
+
+    return await ServerEvent.load({ id: id[0].EventId });
   }
 
   constructor(private row: EventRow) {}
@@ -122,7 +138,7 @@ export class ServerEvent {
       actor: await actor.serializeForFrontend(),
       type: this.type,
       subject: await subject.serializeForFrontend(),
-      time: this.time,
+      time: this.time.getTime(),
       post: await post?.serializeForFrontend(),
     }
   }
