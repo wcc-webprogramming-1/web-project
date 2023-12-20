@@ -151,6 +151,20 @@ export class ServerTweet {
         });
     }
 
+    private async bookmark(user: ServerUser) {
+        // modify the tweet
+        await Database.query("INSERT INTO `bookmarks`(`userId`, `tweetId`) VALUES (?, ?)", [user.id, this.id]);
+        this.row.likes += 1;
+
+        // add the event if it doesn't already exist
+        return await ServerEvent.getOrCreate({
+            type: EventType.Like,
+            actor: user.id,
+            subject: this.userId,
+            post: this.id,
+        });
+    }
+
     private async unlike(user: ServerUser) {
         const evt = await this.getLikedBy(user);
 
@@ -163,12 +177,45 @@ export class ServerTweet {
         return await evt.delete();
     }
 
+    private async unBookmark(user: ServerUser) {
+        const evt = await this.getBookmarkBy(user);
+
+        if (evt === undefined)
+            throw new Error("Cannot unBookmark a tweet that you haven't booked");
+
+        await Database.query("DELETE FROM `bookmarks` WHERE userId = ? and tweetId = ?", [user.id,this.id]);
+
+        return await evt.delete();
+    }
+
+    async getBookmarkBy(user: ServerUser): Promise<ServerEvent | undefined> {
+        return ServerEvent.loadLossy({
+            actor: user.id,
+            type: EventType.Bookmark,
+            post: this.id,
+        })
+    }
+
     async getLikedBy(user: ServerUser): Promise<ServerEvent | undefined> {
         return ServerEvent.loadLossy({
             actor: user.id,
             type: EventType.Like,
             post: this.id,
         })
+    }
+
+
+    async toggleBookmark(user: ServerUser) {
+        const evt = await ServerEvent.loadLossy({
+            actor: user.id,
+            type: EventType.Bookmark,
+            post: this.id,
+        })
+        if (evt !== undefined){
+            await this.unBookmark(user);
+        } else {
+            await this.bookmark(user);
+        }
     }
 
     async toggleLike(user: ServerUser) {
@@ -198,6 +245,7 @@ export class ServerTweet {
             images: images.map(image => image.serializeForFrontend()),
             parentId: this.parentId,
             is_liked_by_user: await this.getLikedBy(user) !== undefined,
+            is_bookmarked_by_user: await this.getBookmarkBy(user) !== undefined,
         }
     }
 
@@ -218,6 +266,7 @@ export class ServerTweet {
             parentId: this.parentId,
             images: images.map(i => i.serializeForFrontend()),
             is_liked_by_user: await this.getLikedBy(user) !== undefined,
+            is_bookmarked_by_user: await this.getBookmarkBy(user) !== undefined,
         }
     }
 

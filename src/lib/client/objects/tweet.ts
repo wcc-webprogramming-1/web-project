@@ -13,6 +13,7 @@ export type ClientDeserializableTweet = {
     creation_date: Date,
     user: ClientDeserializableUser,
     is_liked_by_user: boolean,
+    is_bookmarked_by_user: boolean,
     parentId: number | null,
 }
 
@@ -27,6 +28,7 @@ export type ClientDeserializableTweetComments = {
     user: ClientDeserializableUser,
     images: ClientDeserializableAsset[],
     is_liked_by_user: boolean,
+    is_bookmarked_by_user: boolean,
     parentId: number | null,
 }
 
@@ -101,6 +103,18 @@ export class ClientTweet{
 
         this.tweet.is_liked_by_user = is_liked_by_user;
         this.tweet.likes = likes;
+    }
+
+    async toggleBookmark() {
+        const response = await fetch(`/api/v1/tweet/${this.id}/bookmark`, { method: "POST" });
+
+        if (!response.ok)
+            throw new Error("Failed to toggle bookmark");
+
+        const {bookmark, is_bookmarked_by_user} = await response.json();
+
+        this.tweet.is_bookmarked_by_user = is_bookmarked_by_user;
+        this.tweet.bookmarks = bookmark;
     }
 
     async loadParent() {
