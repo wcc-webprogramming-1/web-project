@@ -118,6 +118,7 @@
     flex-direction: row;
     justify-content: end;
     padding-right: 10px;
+    align-items: center;
     gap: 10px;
 
     z-index: 101;
@@ -138,7 +139,6 @@
     background-color: var(--c-zinc-900);
   }
   .post{
-    margin:15px;
     height: 35px;
     width: 65px;
     border-radius: 25px;
