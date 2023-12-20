@@ -11,7 +11,7 @@ export type ClientDeserializableTweet = {
     images: ClientDeserializableAsset[],
     creation_date: Date,
     user: ClientDeserializableUser,
-    parentId: number,
+    parentId: number | null,
 }
 
 export type ClientDeserializableTweetComments = {
@@ -24,7 +24,7 @@ export type ClientDeserializableTweetComments = {
     creation_date: Date,
     user: ClientDeserializableUser,
     images: ClientDeserializableAsset[],
-    parentId: number,
+    parentId: number | null,
 }
 
 export class ClientTweet{

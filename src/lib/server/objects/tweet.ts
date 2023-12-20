@@ -1,5 +1,6 @@
 import type { ClientDeserializableAsset } from "$lib/client/objects/asset";
 import type { ClientDeserializableTweet, ClientDeserializableTweetComments } from "$lib/client/objects/tweet";
+import { error } from "@sveltejs/kit";
 import { Database } from "../database"
 import { ServerAsset, type AssetId } from "./asset";
 import { ServerUser } from "./user";
@@ -12,7 +13,7 @@ export type TweetRow = {
     bookmarks: number,
     creation_date: Date,
     userId: number,
-    parentId: number,
+    parentId: number | null,
 }
 
 export type TweetConstructionParameters = {
@@ -23,7 +24,7 @@ export type TweetConstructionParameters = {
     bookmarks?: number,
     creation_date?: Date,
     userId: number,
-    parentId?: number,
+    parentId?: number | null,
 }
 
 export class ServerTweet {
@@ -47,9 +48,15 @@ export class ServerTweet {
         return tweet.serializeForFrontend();
     }
 
-    static async loadSet(using: Partial<TweetRow> , limit?: number): Promise<ServerTweet[]> {
-        let query = `SELECT * from tweets WHERE ${Object.keys(using).map(keys => `${keys} = ?`).join(" AND ")}`;
-        
+    static async loadSet(using: Partial<TweetRow>, limit?: number): Promise<ServerTweet[]> {
+        let query = "";
+
+        if (Object.keys(using).length === 0){
+            query = `SELECT * from tweets`;
+        } else {
+            query = `SELECT * from tweets WHERE ${Object.keys(using).map(keys => (using as any)[keys] == null ? `${keys} is ? ` : `${keys} = ?`).join(" AND ")}`;
+        }
+
         if (limit !== undefined){
             query += " LIMIT " + limit;
         }
@@ -58,6 +65,15 @@ export class ServerTweet {
         const tweetRows = await Database.query<TweetRow>(query,params);
 
         return tweetRows.map(tweet => new ServerTweet(tweet));
+    }
+
+    static async loadBookmarks(userId: number): Promise<ServerTweet[]> {
+        const query = `SELECT * from bookmarks WHERE userId = ?`;
+        const tweet_id_array = await Database.query<{ tweetId: number }>(query, [userId]);
+        const promise_array_tweet= tweet_id_array.map(tweet_id => ServerTweet.load({id: tweet_id.tweetId}));
+        const tweet_array = await Promise.all(promise_array_tweet);
+
+        return tweet_array;
     }
 
     static async create(constructionParameters: TweetConstructionParameters): Promise<ServerTweet> {
@@ -103,7 +119,7 @@ export class ServerTweet {
     get bookmarks(): number{return this.row.bookmarks;}
     get creation_date(): Date{return this.row.creation_date;}
     get userId(): number{return this.row.userId;}
-    get parentId(): number{return this.row.parentId;}
+    get parentId(): number | null {return this.row.parentId;}
 
     async serializeForFrontend(): Promise<ClientDeserializableTweet>{
         let user = await this.loadUser();

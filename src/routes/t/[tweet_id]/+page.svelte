@@ -13,6 +13,7 @@
     import Post from "$lib/client/component/post.svelte";
     import UserIcon from "$lib/client/component/userIcon.svelte";
     import { ClientTweet } from "$lib/client/objects/tweet";
+    import { Session } from "$lib/client/stores/session";
     export let data: Type.PageData;
 
     let comments = data.comments;
@@ -88,22 +89,26 @@
     <ReativityBar comment_amount={comment_count} retweet_amount={data.self.retweets}
     like_amount={data.self.likes} bookmark_amount={data.self.bookmarks} compress />
 
-    <div role="separator" class="separatorLine"/>
 
     
-    <div class="wrapper">
-        <div class="wrapperTextBox">
-            <div class="icon-textBox">
-                <div class="icon">
-                    <UserIcon user={data.self.author}/>
+    {#if $Session.isLoggedIn}
+    <div role="separator" class="separatorLine"/>
+        <div class="wrapper">
+            <div class="wrapperTextBox">
+                <div class="icon-textBox">
+                    <div class="icon">
+                        <UserIcon user={data.self.author}/>
+                    </div>
+                    <textarea bind:value={reply_content} class="textBox" placeholder="Post your reply"/>
                 </div>
-                <input type="text" bind:value={reply_content} class="textBox" placeholder="Post your reply">
-            </div>
-            <div>
-                <input type="submit" value="Reply" on:click={() => insertComment(reply_content)}>
+                <div>
+                    {#if reply_content !== ""}
+                        <input type="submit" value="Reply" on:click={() => insertComment(reply_content)}>
+                    {/if}
+                </div>
             </div>
         </div>
-    </div>
+    {/if}
 
     <div role="separator" class="separatorFullLine"/>
     
@@ -148,35 +153,18 @@
         flex-direction: row;
     }
 
-    input[type=text] {
-        background-color: var(--c-black-600);
-        border: 0;
-        outline: none;
-        color: white;
-        font-size: large;
-    }
-
     input::placeholder {
         font-size: large;
         opacity: 0.5;
         color: var(--c-gray-300);
     }
 
-    .replyName {
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
-        padding-left: 60px;
-
-        gap: 5px;
-    }
-
     .textBox {
-        width: max-content;
+        width: 375px;
+        font-family: Inter;
         height: max-content;
         padding: 12px 20px;
         box-sizing: border-box;
-        border: 2px solid #ccc;
         border-radius: 4px;
     }
     
@@ -256,5 +244,14 @@
         align-items: center;
         margin: 0;
         border: 0;
+    }
+    textarea {
+        background-color: transparent;
+        resize: none;
+        color: white;
+        font-size: large;
+        border: none;
+        outline: none;
+        
     }
 </style>

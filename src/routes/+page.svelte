@@ -5,11 +5,11 @@
   import Media from '$lib/client/component/icon/media.svelte';
   import { ClientTweet } from '$lib/client/objects/tweet';
   import Post from '$lib/client/component/post.svelte';
+    import Comment from '$lib/client/component/icon/comment.svelte';
   
   export let data: Type.PageData;
 
-  let tweets: ClientTweet[] = [];
-
+  let tweets: ClientTweet[] = data.self;
   
   async function uploadTweet(content_post: string){
     let response = await fetch("api/v1/tweet", {
@@ -21,11 +21,12 @@
   
     let responseSerialized = await response.json();
     let responseDeserialized = ClientTweet.deserialize(responseSerialized);
-
-
+    tweets.unshift(responseDeserialized);
+    tweets = tweets;
+    content_post = "";
   }
 
-  let content_post: String = "";
+  let content_post: string = "";
 </script>
 
 {#if $Session.isLoggedIn}
@@ -36,20 +37,26 @@
     </div>
     <div class="attachments">
       <button class="attach"><Media size={25} color = "blue-500" /></button>
-      <button class="post" >Post</button>
+      <button class="post" on:click={() => uploadTweet(content_post)}>Post</button>
     </div>
   </div>
 
   <div class="sep" />
 
   <div class="homeTweets">
-    
+    {#each tweets as tweet}
+      <Post comment={tweet} tweet_image_count={0}/>
+    {/each}
   </div>
   {:else}
     <center><h1>Log in</h1></center>
 {/if}
 
 <style>
+  .homeTweets {
+    padding-top: 4px;
+  }
+
   .sep {
     height: 1px;
     background-color: var(--c-zinc-500);
