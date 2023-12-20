@@ -4,6 +4,7 @@
   import type * as Types from "./$types"
   import type { ClientEvent } from "$lib/client/objects/event";
   import Event from "$lib/client/component/event.svelte";
+  import Header from "$lib/client/component/header.svelte";
 
   export let data: Types.PageData;
 
@@ -27,6 +28,8 @@
 
   $: console.log(events);
 </script>
+
+<Header title="Notifications" description=""></Header>
 
 <main>
   {#each events as event}

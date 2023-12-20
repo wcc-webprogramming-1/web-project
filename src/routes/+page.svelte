@@ -126,9 +126,6 @@
     resize: none;
     
   }
-  .homeTweets{
-    
-  }
   .singleTweets{
     margin:10px;
   }
