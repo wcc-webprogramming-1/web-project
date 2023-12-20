@@ -12,12 +12,18 @@
 
 <div class="bookmarks">
     {#each bookmarks as bookmark}
-    <div class ="bookmarked"><Post comment={bookmark} tweet_image_count={0}/></div>
+    <div class ="bookmarked">
+        <a href="/t/{bookmark.id}" class="directTo"><Post comment={bookmark} tweet_image_count={0}/></a>
+    </div>
     {/each}
 </div>
 
 <style>
     .bookmarked{
         margin:10px;
+        border-bottom:1px solid var(--c-zinc-500);
+    }
+    .directTo{
+        text-decoration: none;;
     }
 </style>
