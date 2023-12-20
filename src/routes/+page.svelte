@@ -1,13 +1,10 @@
 <script lang="ts">
-  import { sendRealtimeRequest } from '$lib/client/realtime/session';
   import { Session } from '$lib/client/stores/session';
-  import { onMount } from 'svelte';
   import type * as Type from './$types'
   import UserIcon from '$lib/client/component/userIcon.svelte';
   import Media from '$lib/client/component/icon/media.svelte';
   import { ClientTweet } from '$lib/client/objects/tweet';
   import Post from '$lib/client/component/post.svelte';
-    import Comment from '$lib/client/component/icon/comment.svelte';
   
   export let data: Type.PageData;
 
@@ -39,7 +36,9 @@
     </div>
     <div class="attachments">
       <button class="attach"><Media size={25} color = "blue-500" /></button>
-      <button class="post" on:click={() => uploadTweet(content_post)}>Post</button>
+      {#if content_post != ""}
+        <button class="post" on:click={() => uploadTweet(content_post)}>Post</button>
+      {/if}
     </div>
   </div>
 
@@ -47,7 +46,7 @@
 
   <div class="homeTweets">
     {#each tweets as tweet}
-      <div class ="singleTweets"><Post comment={tweet} tweet_image_count={0}/></div>
+      <div class ="singleTweets"><Post comment={tweet}/></div>
     {/each}
   </div>
   {:else}

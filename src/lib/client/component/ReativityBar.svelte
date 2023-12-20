@@ -77,6 +77,12 @@
             size={30}
             icon_normal_color="white"
             button_hover_color="white"
+
+            on:click={async () => {
+                await tweet.toggleBookmark()
+                
+                tweet = tweet
+            }}
         />
         <pre class="number">{bookmark_amount_text}</pre>
     </div>
