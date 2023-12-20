@@ -4,13 +4,10 @@
     import Like from "./icon/like.svelte";
     import Retweet from "./icon/retweet.svelte";
     import CircularStealthButton from "./circularStealthButton.svelte";
+    import type { ClientTweet } from "../objects/tweet";
 
-
-    export let comment_amount: number;
-    export let retweet_amount: number;
-    export let like_amount: number;
-    export let bookmark_amount: number;
     export let compress: boolean;
+    export let tweet: ClientTweet;
 
     function compress_fn(num: number): String{
         return Intl
@@ -19,20 +16,20 @@
     }
 
     $: comment_amount_text = compress
-        ? compress_fn(comment_amount)
-        : comment_amount.toString();
+        ? compress_fn(tweet.getCommentCount())
+        : tweet.getCommentCount().toString();
     
     $: retweet_amount_text = compress
-        ? compress_fn(retweet_amount)
-        : retweet_amount.toString();
+        ? compress_fn(tweet.retweets)
+        : tweet.retweets.toString();
 
     $: like_amount_text = compress
-        ? compress_fn(like_amount)
-        : like_amount.toString();
+        ? compress_fn(tweet.likes)
+        : tweet.likes.toString();
 
     $: bookmark_amount_text = compress
-        ? compress_fn(bookmark_amount)
-        : bookmark_amount.toString();
+        ? compress_fn(tweet.bookmarks)
+        : tweet.bookmarks.toString();
 </script>
 
 <div class="bar">
@@ -41,7 +38,7 @@
             icon={Comment}
             size={30}
             icon_normal_color="white"
-            button_hover_color="white"
+            button_hover_color="blue-950"
         />
         <pre class="number">{comment_amount_text}</pre>
     </div>
@@ -51,7 +48,7 @@
             icon={Retweet}
             size={30}
             icon_normal_color="white"
-            button_hover_color="white"
+            button_hover_color="emerald-950"
         />
         <pre class="number">{retweet_amount_text}</pre>
     </div>
@@ -60,8 +57,16 @@
         <CircularStealthButton
             icon={Like}
             size={30}
-            icon_normal_color="white"
-            button_hover_color="white"
+            icon_normal_color={tweet.is_liked_by_user ? "red-500" : "white"}
+            button_hover_color="red-950"
+            icon_hover_color={tweet.is_liked_by_user ? "red-500" : "white"}
+            icon_active={tweet.is_liked_by_user}
+
+            on:click={async () => {
+                await tweet.toggleLike();
+
+                tweet = tweet // force re-render
+            }}
         />
         <pre class="number">{like_amount_text}</pre>
     </div>

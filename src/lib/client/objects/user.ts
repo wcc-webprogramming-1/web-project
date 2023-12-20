@@ -13,8 +13,58 @@ export type ClientDeserializableUser = {
 }
 
 export class ClientUser {
+  static Dummy = new ClientUser({
+    handle: "dummy",
+    username: "Dummy",
+    creation_date: new Date(),
+    id: -1,
+    bio: "Dummy",
+    profile_asset: undefined,
+    banner_asset: undefined,
+    following_count: 0,
+    follower_count: 0
+  });
+
   static deserialize(user: ClientDeserializableUser): ClientUser {
     return new ClientUser(user);
+  }
+
+  static async loadFromHandleLossy(handle: string): Promise<ClientUser | undefined> {
+    const response = await fetch(`api/v1/user/by_handle/${handle}`);
+    const data = await response.json();
+
+    if (data === undefined)
+      return undefined;
+
+    return ClientUser.deserialize(data);
+  }
+
+  static async loadFromHandle(handle: string): Promise<ClientUser> {
+    const user = await ClientUser.loadFromHandleLossy(handle);
+
+    if (user === undefined)
+      throw new Error("User not found");
+
+    return user;
+  }
+
+  static async loadFromIdLossy(id: number): Promise<ClientUser | undefined> {
+    const response = await fetch(`api/v1/user/${id}`);
+    const data = await response.json();
+
+    if (data === undefined)
+      return undefined;
+
+    return ClientUser.deserialize(data);
+  }
+
+  static async loadFromId(id: number): Promise<ClientUser> {
+    const user = await ClientUser.loadFromIdLossy(id);
+
+    if (user === undefined)
+      throw new Error("User not found");
+
+    return user;
   }
 
   private constructor(private user: ClientDeserializableUser) {
@@ -66,5 +116,17 @@ export class ClientUser {
     let response = await fetch(`api/v1/user/${this.id}/followers`);
     const data = await response.json();
     return <ClientUser[]> data.map((serialized: any) => ClientUser.deserialize(serialized));
+  }
+
+  async validatePassword(password: string): Promise<boolean> {
+    const response = await fetch(`api/v1/user/${this.id}/validate_password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ password })
+    });
+
+    return await response.json();
   }
 }

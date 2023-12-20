@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { sendRealtimeRequest } from '$lib/client/realtime/session';
   import { Session } from '$lib/client/stores/session';
+  import { onMount } from 'svelte';
   import type * as Type from './$types'
   import UserIcon from '$lib/client/component/userIcon.svelte';
   import Media from '$lib/client/component/icon/media.svelte';

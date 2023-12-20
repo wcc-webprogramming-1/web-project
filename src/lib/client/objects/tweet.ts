@@ -1,3 +1,4 @@
+import { base } from "$app/paths";
 import { ClientAsset, type ClientDeserializableAsset } from "./asset";
 import { type ClientDeserializableUser, ClientUser } from "./user";
 
@@ -11,6 +12,7 @@ export type ClientDeserializableTweet = {
     images: ClientDeserializableAsset[],
     creation_date: Date,
     user: ClientDeserializableUser,
+    is_liked_by_user: boolean,
     parentId: number | null,
 }
 
@@ -24,6 +26,7 @@ export type ClientDeserializableTweetComments = {
     creation_date: Date,
     user: ClientDeserializableUser,
     images: ClientDeserializableAsset[],
+    is_liked_by_user: boolean,
     parentId: number | null,
 }
 
@@ -68,6 +71,10 @@ export class ClientTweet{
         return this.tweet.bookmarks;
     }
 
+    get is_liked_by_user(): boolean{
+        return this.tweet.is_liked_by_user;
+    }
+
     getCommentCount() {
         if (typeof this.tweet.comments == "number")
             return this.tweet.comments;
@@ -82,5 +89,29 @@ export class ClientTweet{
         const response = await fetch(`api/v1/tweets/${this.id}/comments`);
         const commentArray = await response.json();
         return commentArray.map(ClientTweet.deserialize);      
+    }
+
+    async toggleLike() {
+        const response = await fetch(`/api/v1/tweet/${this.id}/like`, { method: "POST" });
+
+        if (!response.ok)
+            throw new Error("Failed to toggle like");
+
+        const {likes, is_liked_by_user} = await response.json();
+
+        this.tweet.is_liked_by_user = is_liked_by_user;
+        this.tweet.likes = likes;
+    }
+
+    async loadParent() {
+        if (this.tweet.parentId == null)
+            return undefined;
+
+        const response = await fetch(`${base}/api/v1/tweet/${this.tweet.parentId}`);
+        const tweet = await response.json();
+
+        console.log("PARENT:", tweet)
+
+        return ClientTweet.deserialize(tweet);
     }
 }

@@ -37,6 +37,9 @@ export class ServerUser {
 
     if (userRow.length > 1)
       throw new Error("Ambiguous Input: Multiple users found");
+
+    if (userRow.length === 0)
+      return undefined;
     
     return new ServerUser(userRow[0]);
   }
@@ -62,11 +65,15 @@ export class ServerUser {
     let query = "INSERT INTO users (";
     const params: any[] = [];
 
+    console.log(constructionParameters);
+
     for (const [key, value] of Object.entries(constructionParameters)) {
       query += `${key}, `;
 
       if (key === "password")
         params.push(hashedPassword);
+      else if (key === "profile_asset_id" || key === "banner_asset_id")
+        params.push(value ? Buffer.from(value as any) : undefined);
       else
         params.push(value);
     }
@@ -83,10 +90,18 @@ export class ServerUser {
 
     query += ")";
 
-    const result = await Database.query<UserRow>(query, params);
-    const userRow = await Database.query<UserRow>("@@IDENTITY");
+    let res = await Database.withConnection(async c => {
+      await c.beginTransaction();
+      await c.query(query, params);
+      let res = await c.query<{UserId: number}[]>("SELECT @@IDENTITY AS UserId;");
+      await c.commit();
 
-    return new ServerUser(userRow[0]);
+      return res;
+    })
+
+    console.log(res);
+
+    return await ServerUser.load({ id: res[0].UserId })
   }
 
   constructor(private row: UserRow) {}
@@ -136,14 +151,27 @@ export class ServerUser {
     const hashedPassword = await bcrypt.hash(newPassword, PASSWORD_SALT_ROUNDS);
 
     await Database.query("UPDATE users SET password = ? WHERE id = ?", [hashedPassword, this.id]);
+    this.row.password = hashedPassword;
+  }
+
+  async setBanner(newBanner: ServerAsset): Promise<void> {
+    await Database.query("UPDATE users SET banner_asset_id = ? WHERE id = ?", [Buffer.from(newBanner.id), this.id]);
+    this.row.banner_asset_id = newBanner.id;
+  }
+
+  async setProfile(newProfile: ServerAsset): Promise<void> {
+    await Database.query("UPDATE users SET profile_asset_id = ? WHERE id = ?", [Buffer.from(newProfile.id), this.id]);
+    this.row.profile_asset_id = newProfile.id;
   }
 
   async setBio(newBio: string): Promise<void> {
     await Database.query("UPDATE users SET bio = ? WHERE id = ?", [newBio, this.id]);
+    this.row.bio = newBio;
   }
 
   async setUsername(newUsername: string): Promise<void> {
     await Database.query("UPDATE users SET username = ? WHERE id = ?", [newUsername, this.id]);
+    this.row.username = newUsername;
   }
   //Follower server functions
   async addFollowing(newFollower: string): Promise<void> {

@@ -34,6 +34,11 @@ export const actions = {
       path: "/",
     });
 
-    return await user!.serializeForFrontend();
+    const res = {
+      user: await user!.serializeForFrontend(),
+      token: session.id,
+    };
+
+    return res
   }
 }

@@ -5,12 +5,15 @@
   export let icon: ComponentType<SvelteComponent<{
     size: number;
     color: Color;
+    active?: boolean;
   }>>;
 
   export let size: number;
   export let icon_normal_color: Color;
   export let icon_hover_color: Color = icon_normal_color;
   export let button_hover_color: Color;
+
+  export let icon_active: boolean = false;
 
   const SIZE_MULTIPLE = 2 / 3;
 
@@ -32,7 +35,7 @@
       style:opacity={isHovered ? (button_hover_color === "white" ? 0.2 : 1) : 0}
     />
     <div class="icon" style:--offset={((size - (size * SIZE_MULTIPLE)) / 2) + "px"}>
-      <svelte:component this={icon} size={size * SIZE_MULTIPLE} color={isHovered ? icon_hover_color : icon_normal_color} />
+      <svelte:component this={icon} active={icon_active} size={size * SIZE_MULTIPLE} color={isHovered ? icon_hover_color : icon_normal_color} />
     </div>
   </button>
 </div>

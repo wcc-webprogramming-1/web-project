@@ -1,13 +1,13 @@
 <script lang="ts">
     import type { ClientTweet } from "../objects/tweet";
     import ImageFormating from "./ImageFormating.svelte";
-    import ReativityBar from "./ReativityBar.svelte";
+    import ReativityBar from "./reativityBar.svelte";
     import CircularStealthButton from "./circularStealthButton.svelte";
     import MoreOptions from "./icon/more_options.svelte";
     import UserIcon from "./userIcon.svelte";
 
     export let comment: ClientTweet;
-    export let tweet_image_count: number;
+    let tweet_image_count: number = comment.images.length;
 </script>
 
 <div>
@@ -15,7 +15,7 @@
         
         <div class="all-content">
             <div class="icon">
-                <UserIcon user={comment.author}/>
+                <UserIcon asset={comment.author.profilePicture}/>
             </div>
     
             <div class="align">
@@ -51,12 +51,7 @@
 
     </div>
 
-    <ReativityBar comment_amount={comment.getCommentCount()} retweet_amount={comment.retweets}
-                like_amount={comment.likes} bookmark_amount={comment.bookmarks} compress 
-    />
-
-    <div role="separator" class="separatorLine"/>
-
+    <ReativityBar tweet={comment} compress />
 </div>
 
 <style>
