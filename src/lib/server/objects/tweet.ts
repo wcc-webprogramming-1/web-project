@@ -12,10 +12,10 @@ export type TweetRow = {
     content: string,
     likes: number,
     retweets: number,
-    bookmarks: number,
     creation_date: Date,
     userId: number,
     parentId: number | null,
+    is_bookmarked_by_user: boolean,
 }
 
 export type TweetConstructionParameters = {
@@ -23,10 +23,10 @@ export type TweetConstructionParameters = {
     content: string,
     likes?: number,
     retweets?: number,
-    bookmarks?: number,
     creation_date?: Date,
     userId: number,
     parentId?: number | null,
+    is_bookmarked_by_user?: boolean,
 }
 
 export class ServerTweet {
@@ -132,10 +132,10 @@ export class ServerTweet {
     get content(): string{return this.row.content;}
     get likes(): number{return this.row.likes;}
     get retweets(): number{return this.row.retweets;}
-    get bookmarks(): number{return this.row.bookmarks;}
     get creation_date(): Date{return this.row.creation_date;}
     get userId(): number{return this.row.userId;}
     get parentId(): number | null {return this.row.parentId;}
+    get is_bookmarked_by_user(): boolean {return this.row.is_bookmarked_by_user}
 
     private async like(user: ServerUser) {
         // modify the tweet
@@ -154,15 +154,7 @@ export class ServerTweet {
     private async bookmark(user: ServerUser) {
         // modify the tweet
         await Database.query("INSERT INTO `bookmarks`(`userId`, `tweetId`) VALUES (?, ?)", [user.id, this.id]);
-        this.row.likes += 1;
-
-        // add the event if it doesn't already exist
-        return await ServerEvent.getOrCreate({
-            type: EventType.Like,
-            actor: user.id,
-            subject: this.userId,
-            post: this.id,
-        });
+        this.row.is_bookmarked_by_user = true;
     }
 
     private async unlike(user: ServerUser) {
@@ -178,22 +170,17 @@ export class ServerTweet {
     }
 
     private async unBookmark(user: ServerUser) {
-        const evt = await this.getBookmarkBy(user);
-
-        if (evt === undefined)
+        let query = await Database.query("SELECT * FROM `bookmarks` WHERE userId = ? and tweetId = ?", [user.id,this.id]);
+        if (query.length === 0)
             throw new Error("Cannot unBookmark a tweet that you haven't booked");
 
         await Database.query("DELETE FROM `bookmarks` WHERE userId = ? and tweetId = ?", [user.id,this.id]);
+        this.row.is_bookmarked_by_user = false;
 
-        return await evt.delete();
     }
 
-    async getBookmarkBy(user: ServerUser): Promise<ServerEvent | undefined> {
-        return ServerEvent.loadLossy({
-            actor: user.id,
-            type: EventType.Bookmark,
-            post: this.id,
-        })
+    getBookmarkState(user: ServerTweet): boolean {
+        return this.row.is_bookmarked_by_user
     }
 
     async getLikedBy(user: ServerUser): Promise<ServerEvent | undefined> {
@@ -206,12 +193,9 @@ export class ServerTweet {
 
 
     async toggleBookmark(user: ServerUser) {
-        const evt = await ServerEvent.loadLossy({
-            actor: user.id,
-            type: EventType.Bookmark,
-            post: this.id,
-        })
-        if (evt !== undefined){
+        let query = await Database.query("SELECT * FROM `bookmarks` WHERE userId = ? and tweetId = ?", [user.id,this.id]);
+
+        if (query.length !== 0){
             await this.unBookmark(user);
         } else {
             await this.bookmark(user);
@@ -238,14 +222,14 @@ export class ServerTweet {
             content: this.content,
             likes: this.likes,
             retweets: this.retweets,
-            bookmarks: this.bookmarks,
             creation_date: this.creation_date,
             user: await user.serializeForFrontend(), 
             comments: await Promise.all(comments.map(comment => comment.serializeForFrontendComments())),
             images: images.map(image => image.serializeForFrontend()),
             parentId: this.parentId,
             is_liked_by_user: await this.getLikedBy(user) !== undefined,
-            is_bookmarked_by_user: await this.getBookmarkBy(user) !== undefined,
+            is_bookmarked_by_user: false,
+            bookmarks: await this.getBookmarkCount(),
         }
     }
 
@@ -259,15 +243,21 @@ export class ServerTweet {
             content: this.content,
             likes: this.likes,
             retweets: this.retweets,
-            bookmarks: this.bookmarks,
             comments: comments.length,
             creation_date: this.creation_date,
             user: await user.serializeForFrontend(), 
             parentId: this.parentId,
             images: images.map(i => i.serializeForFrontend()),
             is_liked_by_user: await this.getLikedBy(user) !== undefined,
-            is_bookmarked_by_user: await this.getBookmarkBy(user) !== undefined,
+            is_bookmarked_by_user: false,
+            bookmarks: await this.getBookmarkCount(),
         }
+    }
+
+    async getBookmarkCount(): Promise<number> {
+        let query = await Database.query("SELECT * FROM `bookmarks` WHERE tweetId = ?", [this.id]);
+
+        return query.length;
     }
 
     async loadComments(): Promise<ServerTweet[]> {

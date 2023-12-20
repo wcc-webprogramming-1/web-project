@@ -8,8 +8,8 @@ export async function POST({ params, cookies }) {
     const event = await tweet.toggleBookmark(self.user);
 
   return new Response(JSON.stringify({
-    bookmar: tweet.bookmarks,
-    is_bookmarked_by_user: await tweet.getBookmarkBy(self.user) !== undefined
+    bookmark: await tweet.getBookmarkCount(),
+    is_bookmarked_by_user: tweet.getBookmarkState(tweet),
   }));
 
 }
