@@ -5,6 +5,7 @@
     import Retweet from "./icon/retweet.svelte";
     import CircularStealthButton from "./circularStealthButton.svelte";
     import type { ClientTweet } from "../objects/tweet";
+    import { goto } from "$app/navigation";
 
     export let compress: boolean;
     export let tweet: ClientTweet;
@@ -39,6 +40,9 @@
             size={30}
             icon_normal_color="white"
             button_hover_color="blue-950"
+            on:click={() =>{
+                goto(`/t/${tweet.id}`);
+            }}
         />
         <pre class="number">{comment_amount_text}</pre>
     </div>
@@ -78,10 +82,15 @@
             icon_normal_color="white"
             button_hover_color="white"
 
-            on:click={async () => {
-                await tweet.toggleBookmark()
-                
-                tweet = tweet
+            on:click={(e) => {
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+
+                tweet.toggleBookmark().then(() => {
+                    tweet = tweet
+                })
+
+
             }}
         />
         <pre class="number">{bookmark_amount_text}</pre>

@@ -12,9 +12,9 @@
 
 <div class="bookmarks">
     {#each bookmarks as bookmark}
-    <div class ="bookmarked">
-        <a href="/t/{bookmark.id}" class="directTo"><Post comment={bookmark} tweet_image_count={0}/></a>
-    </div>
+        <div class ="bookmarked">
+            <a href="/t/{bookmark.id}" class="directTo"><Post comment={bookmark} tweet_image_count={0}/></a>
+        </div>
     {/each}
 </div>
 

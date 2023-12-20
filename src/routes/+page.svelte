@@ -87,13 +87,16 @@
     padding-top: 4px;
   }
 
-  .sep {
-    height: 1px;
-    background-color: var(--c-zinc-500);
-    z-index: 9999;
-    position: sticky;
-    top: 89px;
-  }
+  .sep, .separatorFullLine {
+        border-top-color: rgb(119, 124, 128);
+        border-top-width: 1px;
+        border-top-style: solid;
+        margin: 0;
+        padding: 0;
+        width: calc(100% + 40px);
+        position: relative;
+        right: 20px;
+    }
     
   .tweetBox{
     display: flex;
@@ -135,6 +138,7 @@
     background-color: var(--c-zinc-900);
   }
   .post{
+    margin:15px;
     height: 35px;
     width: 65px;
     border-radius: 25px;
@@ -165,7 +169,8 @@
     
   }
   .singleTweets{
-    margin:10px;
+    padding: 10px;
+    margin:0px;
     border-bottom:1px solid var(--c-zinc-500);
     padding-bottom:5px;;
     text-decoration:none;
