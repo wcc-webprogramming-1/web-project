@@ -6,6 +6,7 @@
   import { ClientTweet } from '$lib/client/objects/tweet';
   import Post from '$lib/client/component/post.svelte';
   import { scrollY } from '$lib/client/stores/render';
+  import { base } from '$app/paths';
   
   export let data: Type.PageData;
 
@@ -15,7 +16,7 @@
     let response = await fetch("api/v1/tweet", {
       method: "POST",
       body: JSON.stringify({
-        content: content_post
+      content: content_post
       })
     });
   
@@ -44,15 +45,16 @@
     <button class="post" on:click={() => uploadTweet(content_post)}>Post</button>
   </div>
 
-  <div class="sep" />
+  <div class="sep"/>
 
   <div class="homeTweets">
     {#each tweets as tweet}
-      <div class ="singleTweets"><Post comment={tweet} /></div>
+      <div class ="singleTweets">
+        <a href="/t/{tweet.id}" class="directTo"><Post comment={tweet}/></a>
+      </div>
     {/each}
   </div>
   {:else}
-    <center><h1>Log in</h1></center>
 {/if}
 
 <style>
@@ -164,5 +166,11 @@
   }
   .singleTweets{
     margin:10px;
+    border-bottom:1px solid var(--c-zinc-500);
+    padding-bottom:5px;;
+    text-decoration:none;
+  }
+  .directTo{
+    text-decoration: none;
   }
 </style>
