@@ -8,14 +8,14 @@
   import type * as Type from './$types'
   import { Session } from '$lib/client/stores/session';
   import FollowsCount from '$lib/client/component/followsCount.svelte';
-    import { ClientUser } from '$lib/client/objects/user';
-    import Upload from '$lib/client/component/icon/upload.svelte';
-    import type { AssetId } from '$lib/server/objects/asset';
-    import { encodeAssetId } from '$lib/util/assetId';
-    import { ClientAsset } from '$lib/client/objects/asset';
-    import Hourglass from '$lib/client/component/icon/hourglass.svelte';
-    import Edit from '$lib/client/component/icon/edit.svelte';
-    import { deserialize, enhance } from '$app/forms';
+  import { ClientUser } from '$lib/client/objects/user';
+  import Upload from '$lib/client/component/icon/upload.svelte';
+  import type { AssetId } from '$lib/server/objects/asset';
+  import { encodeAssetId } from '$lib/util/assetId';
+  import { ClientAsset } from '$lib/client/objects/asset';
+  import Hourglass from '$lib/client/component/icon/hourglass.svelte';
+  import Edit from '$lib/client/component/icon/edit.svelte';
+  import { deserialize, enhance } from '$app/forms';
   
   export let data: Type.PageData;
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -284,6 +284,8 @@
     padding: 0;
     display: flex;
     border: 2px solid white;
+    height: 140px;
+    width: 100%;
   }
 
   .editmodal {

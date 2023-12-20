@@ -1,7 +1,9 @@
 import type { ClientDeserializableAsset } from "$lib/client/objects/asset";
+import { EventType } from "$lib/client/objects/event";
 import type { ClientDeserializableTweet, ClientDeserializableTweetComments } from "$lib/client/objects/tweet";
 import { Database } from "../database"
 import { ServerAsset, type AssetId } from "./asset";
+import { ServerEvent } from "./event";
 import { ServerUser } from "./user";
 
 export type TweetRow = {
@@ -55,6 +57,20 @@ export class ServerTweet {
         return tweetRows.map(tweet => new ServerTweet(tweet));
     }
 
+    static async loadLossy(using: Partial<TweetRow>): Promise<ServerTweet | undefined> {
+        const query = `SELECT * from tweets WHERE ${Object.keys(using).map(keys => `${keys} = ?`).join(" AND ")}`;
+        const params = Object.values(using);
+        const tweetRows = await Database.query<TweetRow>(query,params);
+
+        if (tweetRows.length == 0) {
+            return undefined;
+        }
+        if (tweetRows.length > 1){
+            throw new Error("Ambiguous Input: Multiple tweets found");
+        }
+        return new ServerTweet(tweetRows[0]);
+    }
+
     static async create(constructionParameters: TweetConstructionParameters): Promise<ServerTweet> {
         let query = "INSERT INTO tweets (";
         const params: any[] = [];
@@ -100,6 +116,50 @@ export class ServerTweet {
     get userId(): number{return this.row.userId;}
     get parentId(): number{return this.row.parentId;}
 
+    private async like(user: ServerUser) {
+        // modify the tweet
+        await Database.query("UPDATE tweets SET likes = likes + 1 WHERE id = ?", [this.id]);
+        this.row.likes += 1;
+
+        // add the event if it doesn't already exist
+        return await ServerEvent.getOrCreate({
+            type: EventType.Like,
+            actor: user.id,
+            subject: this.userId,
+            post: this.id,
+        });
+    }
+
+    private async unlike(user: ServerUser) {
+        const evt = await this.getLikedBy(user);
+
+        if (evt === undefined)
+            throw new Error("Cannot unlike a tweet that you haven't liked");
+
+        await Database.query("UPDATE tweets SET likes = likes - 1 WHERE id = ?", [this.id]);
+        this.row.likes -= 1;
+
+        return await evt.delete();
+    }
+
+    async getLikedBy(user: ServerUser): Promise<ServerEvent | undefined> {
+        return ServerEvent.loadLossy({
+            actor: user.id,
+            type: EventType.Like,
+            post: this.id,
+        })
+    }
+
+    async toggleLike(user: ServerUser) {
+        const evt = await this.getLikedBy(user);
+
+        if (evt !== undefined) {
+            await this.unlike(user);
+        } else {
+            await this.like(user);
+        }
+    }
+
     async serializeForFrontend(): Promise<ClientDeserializableTweet>{
         let user = await this.loadUser();
         let comments = await this.loadComments();
@@ -116,6 +176,7 @@ export class ServerTweet {
             comments: await Promise.all(comments.map(comment => comment.serializeForFrontendComments())),
             images: images.map(image => image.serializeForFrontend()),
             parentId: this.parentId,
+            is_liked_by_user: await this.getLikedBy(user) !== undefined,
         }
     }
 
@@ -135,6 +196,7 @@ export class ServerTweet {
             user: await user.serializeForFrontend(), 
             parentId: this.parentId,
             images: images.map(i => i.serializeForFrontend()),
+            is_liked_by_user: await this.getLikedBy(user) !== undefined,
         }
     }
 

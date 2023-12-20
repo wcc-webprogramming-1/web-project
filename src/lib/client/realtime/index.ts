@@ -4,9 +4,14 @@ import { handleServerSentEvent, sendRealtimeRequest } from "./session";
 
 export class Realtime {
   private static listeners: Set<(event: ClientEvent) => void> = new Set();
+  private static eventRemovedListeners: Map<number, () => void> = new Map();
 
   public static addEventListener(listener: (event: ClientEvent) => void): void {
     Realtime.listeners.add(listener);
+  }
+
+  public static addEventRemovedListener(id: number, callback: () => void): void {
+    Realtime.eventRemovedListeners.set(id, callback);
   }
 
   public static removeEventListener(listener: (event: ClientEvent) => void): void {
@@ -46,6 +51,14 @@ export class Realtime {
           }
 
           Realtime.mutUnseenEventCount.update((count) => count + 1);
+          break;
+        case "event-removed":
+          const callback = Realtime.eventRemovedListeners.get(event.id);
+
+          if (callback !== undefined) {
+            callback();
+            Realtime.eventRemovedListeners.delete(event.id);
+          }
           break;
         case "read_events":
           Realtime.mutUnseenEventCount.set(0);

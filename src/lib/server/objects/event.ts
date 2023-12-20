@@ -1,5 +1,6 @@
 import type { ClientDeserializableEvent, EventType } from "$lib/client/objects/event";
 import { Database } from "../database";
+import { WebsocketSession } from "../socket/session";
 import { ServerTweet } from "./tweet";
 import { ServerUser } from "./user";
 
@@ -37,6 +38,9 @@ export class ServerEvent {
     if (eventRow.length > 1)
       throw new Error("Ambiguous Input: Multiple events found");
     
+    if (eventRow.length == 0)
+      return undefined;
+
     return new ServerEvent(eventRow[0]);
   }
 
@@ -69,6 +73,15 @@ export class ServerEvent {
     return await Promise.all(events.map(event => event.serializeForFrontend()));
   }
 
+  static async getOrCreate(constructionParameters: EventConstructionParameters): Promise<ServerEvent> {
+    const existing = await ServerEvent.loadLossy(constructionParameters);
+
+    if (existing !== undefined)
+      return existing;
+
+    return await ServerEvent.create(constructionParameters);
+  }
+
   static async create(constructionParameters: EventConstructionParameters): Promise<ServerEvent> {
     let query = "INSERT INTO events (";
 
@@ -91,7 +104,14 @@ export class ServerEvent {
       return r;
     })
 
-    return await ServerEvent.load({ id: id[0].EventId });
+    let evt = await ServerEvent.load({ id: id[0].EventId });
+
+    WebsocketSession.broadcast({
+      type: "event",
+      content: await evt.serializeForFrontend()
+    });
+
+    return evt;
   }
 
   constructor(private row: EventRow) {}
@@ -103,6 +123,15 @@ export class ServerEvent {
   get id(): number { return this.row.id; }
   get type(): number { return this.row.type as EventType; }
   get time(): Date { return this.row.time; }
+
+  public async delete() {
+    await Database.query("DELETE FROM events WHERE id = ?", [this.id]);
+
+    WebsocketSession.broadcast({
+      type: "event-removed",
+      id: this.id,
+    })
+  }
 
   public async loadActor(): Promise<ServerUser> {
     if (this.cache_actor !== undefined)

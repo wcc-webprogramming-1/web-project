@@ -162,10 +162,10 @@ sw.addEventListener("message", m => {
  */
 function handleMessage(content) {
   console.log("Handling message: " + content);
-
-  
 }
 
-sw.addEventListener("install", () => {
-  sw.clients.claim();
+sw.addEventListener("activate", async () => {
+  console.log("Installed");
+
+  await sw.clients.claim();
 })

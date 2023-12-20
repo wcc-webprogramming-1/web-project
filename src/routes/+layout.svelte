@@ -19,6 +19,7 @@
     import Bell from "$lib/client/component/icon/bell.svelte";
     import Bookmark from "$lib/client/component/icon/bookmark.svelte";
     import Profile from "$lib/client/component/icon/profile.svelte";
+    import { scrollY } from "$lib/client/stores/render";
 
   const [cross_out, cross_in] = crossfade({ duration: 500 });
 
@@ -161,7 +162,7 @@
     {/if}
   </div>
 
-  <div class="center">
+  <div class="center" on:wheel={(e) => $scrollY = e.currentTarget.scrollTop}>
     <slot></slot>
   </div>
 
@@ -229,6 +230,13 @@
     flex-grow: 1;
     background-color: var(--c-black);
     overflow: scroll;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .center::-webkit-scrollbar {
+    display: none;
   }
 
   .right-bar {

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from "$app/paths";
-    import ReativityBar from "$lib/client/component/ReativityBar.svelte";
+    import ReativityBar from "$lib/client/component/reativityBar.svelte";
     import Header from "$lib/client/component/header.svelte";
     import TweetDate from "$lib/client/component/tweetDate.svelte";
     import UserBasicView from "$lib/client/component/userBasicView.svelte";
@@ -84,8 +84,7 @@
         
     <div role="separator" class="separatorLine"/>
 
-    <ReativityBar comment_amount={comment_count} retweet_amount={data.self.retweets}
-    like_amount={data.self.likes} bookmark_amount={data.self.bookmarks} compress />
+    <ReativityBar tweet={data.self} compress />
 
     <div role="separator" class="separatorLine"/>
 
@@ -94,7 +93,7 @@
         <div class="wrapperTextBox">
             <div class="icon-textBox">
                 <div class="icon">
-                    <UserIcon user={data.self.author}/>
+                    <UserIcon asset={data.self.author.profilePicture}/>
                 </div>
                 <input type="text" bind:value={reply_content} class="textBox" placeholder="Post your reply">
             </div>
@@ -107,7 +106,8 @@
     <div role="separator" class="separatorFullLine"/>
     
      {#each comments as comment}
-        <Post comment={comment} tweet_image_count={comment.images.length} />
+        <Post comment={comment} />
+        <div role="separator" class="separatorFullLine"/>
      {/each}
     
 </div>

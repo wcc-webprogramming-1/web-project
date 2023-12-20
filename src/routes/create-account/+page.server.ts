@@ -23,7 +23,12 @@ export const actions = {
     if (password != repeat_password) return new Response("Passwords do not match", { status: 400 });
 
     if (handle.toString().toLowerCase().split("").find((char) => !char.match(/[a-z0-9_-]/)))
-      return new Response("Handle contains invalid characters", { status: 400 });
+      throw new Error("Handle contains invalid characters");
+
+    const existingUser = await ServerUser.loadLossy({ handle: handle.toString().toLowerCase() });
+
+    if (existingUser) 
+      throw new Error("Handle already taken");
 
     console.log({ icon_asset, banner_asset })
 
