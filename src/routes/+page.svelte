@@ -45,7 +45,7 @@
 
   <div class="homeTweets">
     {#each tweets as tweet}
-      <Post comment={tweet} tweet_image_count={0}/>
+      <div class ="singleTweets"><Post comment={tweet} tweet_image_count={0}/></div>
     {/each}
   </div>
   {:else}
@@ -125,6 +125,9 @@
     
   }
   .homeTweets{
-
+    
+  }
+  .singleTweets{
+    margin:10px;
   }
 </style>

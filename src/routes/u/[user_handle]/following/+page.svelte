@@ -13,7 +13,6 @@
         data.self,
         data.self,
         data.self,
-        data.self
     ]
 
 </script>
@@ -33,7 +32,6 @@
                 <span><Button contents = {"Following"}/></span>
             </div></a>
         {/each}
-
     </div>
 </section>
 
@@ -73,7 +71,7 @@
         padding-bottom: 6px;
     }
     .accountList:hover{
-        background-color: var(--c-stone-800);
+        background-color: var(--c-stone-900);
     }
     .userRedirect{
         text-decoration: none;
