@@ -8,7 +8,7 @@
   import type * as Type from './$types'
   import { Session } from '$lib/client/stores/session';
   import FollowsCount from '$lib/client/component/followsCount.svelte';
-    import { ClientUser } from '$lib/client/objects/user';
+  import { ClientUser } from '$lib/client/objects/user';
   
   export let data: Type.PageData;
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -22,7 +22,7 @@
   <div class="banner">
     <UserBanner />
     <div class="icon">
-      <UserIcon user={data.self} />
+      <UserIcon user={data.self}/>
       <div class = "followbutton"><Button contents={is_self ? "Edit Profile" : "Follow"}/></div>
     </div>
   </div>

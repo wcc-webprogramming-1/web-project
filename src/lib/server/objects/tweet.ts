@@ -47,8 +47,13 @@ export class ServerTweet {
         return tweet.serializeForFrontend();
     }
 
-    static async loadSet(using: Partial<TweetRow>): Promise<ServerTweet[]> {
-        const query = `SELECT * from tweets WHERE ${Object.keys(using).map(keys => `${keys} = ?`).join(" AND ")}`;
+    static async loadSet(using: Partial<TweetRow> , limit?: number): Promise<ServerTweet[]> {
+        let query = `SELECT * from tweets WHERE ${Object.keys(using).map(keys => `${keys} = ?`).join(" AND ")}`;
+        
+        if (limit !== undefined){
+            query += " LIMIT " + limit;
+        }
+
         const params = Object.values(using);
         const tweetRows = await Database.query<TweetRow>(query,params);
 

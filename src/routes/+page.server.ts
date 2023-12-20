@@ -1,17 +1,11 @@
 import * as db from '$lib/server/database';
+import { ServerTweet } from '$lib/server/objects/tweet.js';
 import { ServerUser } from '$lib/server/objects/user.js';
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ params }) {
-	// ServerUser.create({
-	// 	bio: "Demo bio for user 0",
-	// 	handle: "demo",
-	// 	password: "demo",
-	// 	username: "Demo User",
-	// 	id: 0,
-	// })
-
+export async function load({params}) {
+	const tweets = ServerTweet.loadSet({ })
 	return {
-		demo: db.Database.query("SELECT * FROM demo WHERE id = ?", [ 1 ])
+
 	};
 }
