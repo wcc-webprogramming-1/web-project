@@ -20,6 +20,7 @@
     import Bookmark from "$lib/client/component/icon/bookmark.svelte";
     import Profile from "$lib/client/component/icon/profile.svelte";
     import { scrollY } from "$lib/client/stores/render";
+    import Logo from "$lib/client/component/icon/logo.svelte";
 
   const [cross_out, cross_in] = crossfade({ duration: 500 });
 
@@ -148,6 +149,9 @@
 
 <div class="root">
   <div class="left-bar">
+    <div class="logo" style="padding: 16px;">
+      <Logo size={48} color="white" />
+    </div>
     <LeftBarItem path="/" text="Home" icon={Home} />
     {#if $Session.isLoggedIn}
       <div in:fade={{ duration: 100 }} out:fade={{ duration: 100 }}>
@@ -210,7 +214,7 @@
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    height: 100vh;
+    min-height: 100vh;
     gap: 1px;
     background-color: var(--border-color);
   }
@@ -222,6 +226,9 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    position: sticky;
+    top: 0;
+    height: 100vh;
   }
 
   .center {
@@ -229,13 +236,12 @@
     min-width: 575px;
     flex-grow: 1;
     background-color: var(--c-black);
-    overflow: scroll;
-    overflow-x: hidden;
+    overflow-x: clip;
     display: flex;
     flex-direction: column;
   }
 
-  .center::-webkit-scrollbar {
+  :global(html)::-webkit-scrollbar {
     display: none;
   }
 
@@ -243,5 +249,8 @@
     width: 33%;
     flex-grow: 1;
     background-color: var(--c-neutral-900);
+    position: sticky;
+    top: 0;
+    height: 100vh;
   }
 </style>

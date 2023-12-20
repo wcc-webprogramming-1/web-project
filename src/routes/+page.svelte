@@ -5,6 +5,7 @@
   import Media from '$lib/client/component/icon/media.svelte';
   import { ClientTweet } from '$lib/client/objects/tweet';
   import Post from '$lib/client/component/post.svelte';
+  import { scrollY } from '$lib/client/stores/render';
   
   export let data: Type.PageData;
 
@@ -29,24 +30,25 @@
 </script>
 
 {#if $Session.isLoggedIn}
-  <div class="tweetBox">
-    <div class = "tweet">
-      <div class = "icon"><UserIcon user={$Session.user}/></div>
+  <div class="tweetBoxWrap">
+    <div class="tweetBox tweetBoxShadow">
+      <div class="icon"><UserIcon user={$Session.user}/></div>
       <textarea placeholder="What is happening?!" id="tweet" name="tweet" bind:value={content_post}/>
     </div>
-    <div class="attachments">
-      <button class="attach"><Media size={25} color = "blue-500" /></button>
-      {#if content_post != ""}
-        <button class="post" on:click={() => uploadTweet(content_post)}>Post</button>
-      {/if}
-    </div>
+  </div>
+  
+  <div class="tweetboxpadding"></div>
+
+  <div class="attachments" style="padding-right: 20px; align-items: {$scrollY > 71 ? "center" : "flex-end"}">
+    <button class="attach"><Media size={25} color = "blue-500" /></button>
+    <button class="post" on:click={() => uploadTweet(content_post)}>Post</button>
   </div>
 
   <div class="sep" />
 
   <div class="homeTweets">
     {#each tweets as tweet}
-      <div class ="singleTweets"><Post comment={tweet}/></div>
+      <div class ="singleTweets"><Post comment={tweet} /></div>
     {/each}
   </div>
   {:else}
@@ -54,6 +56,31 @@
 {/if}
 
 <style>
+  .tweetBoxShadow {
+    box-shadow: 0px 0px 30px 2px rgba(0, 0, 0, 1);
+  }
+
+  .tweetBoxWrap {
+    position: fixed;
+    z-index: 100;
+    width: 575px;
+    overflow: hidden;
+    height: 200px;
+  }
+
+  .tweetBoxWrap > .tweetBox {
+    position: unset;
+  }
+  
+  .tweetboxpadding {
+    flex-shrink: 0;
+    height: 113px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
   .homeTweets {
     padding-top: 4px;
   }
@@ -61,21 +88,24 @@
   .sep {
     height: 1px;
     background-color: var(--c-zinc-500);
+    z-index: 9999;
+    position: sticky;
+    top: 89px;
   }
     
   .tweetBox{
     display: flex;
-    flex-direction: column;
+    position: fixed;
+    width: 550px;
+    flex-direction: row;
     gap: 15px;
     color: var(--c-zinc-500);
     padding-left: 25px;
     padding-top: 10px;
     padding-bottom: 10px;
-  }
-  .tweet{
-    display: flex;
-    flex-direction: row;;
-    gap: 10px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background-color: rgba(0,0,0,0.7);
   }
 
   .attachments{
@@ -84,7 +114,14 @@
     justify-content: end;
     padding-right: 10px;
     gap: 10px;
-    align-items: center;
+
+    z-index: 101;
+
+    position: sticky;
+    top: 26px;
+    align-self: flex-end;
+
+    padding-bottom: 20px;
   }
   .attach{
     padding-top:5px;
@@ -123,9 +160,6 @@
     outline: 0;
     color: var(--c-white);
     resize: none;
-    
-  }
-  .homeTweets{
     
   }
   .singleTweets{
