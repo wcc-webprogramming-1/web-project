@@ -20,6 +20,7 @@
     import Bookmark from "$lib/client/component/icon/bookmark.svelte";
     import Profile from "$lib/client/component/icon/profile.svelte";
     import { scrollY } from "$lib/client/stores/render";
+    import Logo from "$lib/client/component/icon/logo.svelte";
 
   const [cross_out, cross_in] = crossfade({ duration: 500 });
 
@@ -148,6 +149,9 @@
 
 <div class="root">
   <div class="left-bar">
+    <div class="logo" style="padding: 16px;">
+      <Logo size={48} color="white" />
+    </div>
     <LeftBarItem path="/" text="Home" icon={Home} />
     {#if $Session.isLoggedIn}
       <div in:fade={{ duration: 100 }} out:fade={{ duration: 100 }}>
