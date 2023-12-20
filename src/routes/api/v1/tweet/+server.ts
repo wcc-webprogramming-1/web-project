@@ -61,5 +61,5 @@ export async function POST(event){
         }
     }
 
-    return new Response(JSON.stringify(await newComment.serializeForFrontend()));
+    return new Response(JSON.stringify(await newComment.serializeForFrontend(session.user)));
 } 

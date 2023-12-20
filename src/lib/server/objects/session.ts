@@ -1,3 +1,4 @@
+import type { Cookies } from "@sveltejs/kit";
 import { Database } from "../database"
 import { ServerUser } from "./user";
 import crypto from "node:crypto";
@@ -11,6 +12,13 @@ export type SessionRow = {
 }
 
 export class ServerSession {
+  static async fromCookies(cookies: Cookies) {
+    if (cookies.get("session") === undefined)
+      return undefined;
+
+    return await ServerSession.load(cookies.get("session")!);
+  }
+
   static async load(session_token: string): Promise<ServerSession> {
     const row = await Database.query<SessionRow>("SELECT * FROM session WHERE session_id = ?", [session_token]);
     

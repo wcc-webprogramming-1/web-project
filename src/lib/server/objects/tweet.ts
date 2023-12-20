@@ -44,10 +44,10 @@ export class ServerTweet {
         return new ServerTweet(tweetRow[0]);
     }
 
-    static async loadForClient(using: Partial<TweetRow>): Promise<ClientDeserializableTweet>{
+    static async loadForClient(using: Partial<TweetRow>, client: ServerUser): Promise<ClientDeserializableTweet>{
         const tweet = await ServerTweet.load(using);
 
-        return tweet.serializeForFrontend();
+        return tweet.serializeForFrontend(client);
     }
 
     static async loadSet(using: Partial<TweetRow>, limit?: number): Promise<ServerTweet[]> {
@@ -212,7 +212,7 @@ export class ServerTweet {
         }
     }
 
-    async serializeForFrontend(): Promise<ClientDeserializableTweet>{
+    async serializeForFrontend(consumer?: ServerUser): Promise<ClientDeserializableTweet>{
         let user = await this.loadUser();
         let comments = await this.loadComments();
         let images = await this.loadImages()
@@ -223,8 +223,8 @@ export class ServerTweet {
             likes: this.likes,
             retweets: this.retweets,
             creation_date: this.creation_date,
-            user: await user.serializeForFrontend(), 
-            comments: await Promise.all(comments.map(comment => comment.serializeForFrontendComments())),
+            user: await user.serializeForFrontend(consumer), 
+            comments: await Promise.all(comments.map(comment => comment.serializeForFrontendComments(consumer))),
             images: images.map(image => image.serializeForFrontend()),
             parentId: this.parentId,
             is_liked_by_user: await this.getLikedBy(user) !== undefined,
@@ -233,7 +233,7 @@ export class ServerTweet {
         }
     }
 
-    async serializeForFrontendComments(): Promise<ClientDeserializableTweetComments> {
+    async serializeForFrontendComments(consumer?: ServerUser): Promise<ClientDeserializableTweetComments> {
         let user = await this.loadUser();
         let comments = await this.loadComments();
         const images = await this.loadImages();
@@ -245,7 +245,7 @@ export class ServerTweet {
             retweets: this.retweets,
             comments: comments.length,
             creation_date: this.creation_date,
-            user: await user.serializeForFrontend(), 
+            user: await user.serializeForFrontend(consumer), 
             parentId: this.parentId,
             images: images.map(i => i.serializeForFrontend()),
             is_liked_by_user: await this.getLikedBy(user) !== undefined,

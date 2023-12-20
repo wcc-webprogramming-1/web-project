@@ -222,7 +222,7 @@
   .left-bar {
     width: 33%;
     flex-grow: 1;
-    background-color: var(--c-neutral-900);
+    background-color: var(--c-neutral-950);
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -248,7 +248,7 @@
   .right-bar {
     width: 33%;
     flex-grow: 1;
-    background-color: var(--c-neutral-900);
+    background-color: var(--c-neutral-950);
     position: sticky;
     top: 0;
     height: 100vh;

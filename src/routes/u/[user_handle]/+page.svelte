@@ -16,6 +16,7 @@
   import Hourglass from '$lib/client/component/icon/hourglass.svelte';
   import Edit from '$lib/client/component/icon/edit.svelte';
   import { deserialize, enhance } from '$app/forms';
+    import Post from '$lib/client/component/post.svelte';
   
   export let data: Type.PageData;
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -135,7 +136,23 @@
     <div class="icon">
       <UserIcon asset={user.profilePicture} />
       <div class = "followbutton">
-        <Button on:click={() => edit_modal_open = true} contents={is_self ? "Edit Profile" : "Follow"}/>
+        {#if is_self}
+          <Button on:click={() => { edit_modal_open = true; }} contents="Edit Profile"/>
+        {:else}
+          {#if user.isFollowing}
+            <Button on:click={async () => {
+              await user.unfollow();
+
+              user = user;
+            }} contents="Unfollow"/>
+          {:else}
+            <Button on:click={async () => {
+              await user.follow();
+
+              user = user;
+            }} contents="Follow"/>
+          {/if}
+        {/if}
       </div>
     </div>
   </div>
@@ -147,10 +164,27 @@
     <p class="joindate"><CalendarIcon size={20} color="zinc-500"/>Joined {months[user.creationDate.getMonth()]} {user.creationDate.getFullYear()}</p>
     <p class="followsCount"><FollowsCount { user } /></p>
   </div>
+
+  <div class="tweets">
+    {#each data.tweets as tweet}
+      <div class="tweet">
+        <Post comment={tweet} />
+      </div>
+    {/each}
+  </div>
 </div>
 {/key}
 
 <style>
+  .tweets {
+    border-top: 2px solid var(--c-stone-600);
+  }
+
+  .tweet {
+    padding: 10px;
+    border-bottom: 2px solid var(--c-stone-600);
+  }
+
   .labelwrap {
     padding-bottom: 4px;
   }

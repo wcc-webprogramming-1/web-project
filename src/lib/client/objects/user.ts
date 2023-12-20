@@ -9,7 +9,8 @@ export type ClientDeserializableUser = {
   profile_asset: ClientDeserializableAsset | undefined,
   banner_asset: ClientDeserializableAsset | undefined,
   following_count: number;
-  follower_count:number;
+  follower_count: number;
+  is_following: boolean,
 }
 
 export class ClientUser {
@@ -22,7 +23,8 @@ export class ClientUser {
     profile_asset: undefined,
     banner_asset: undefined,
     following_count: 0,
-    follower_count: 0
+    follower_count: 0,
+    is_following: false,
   });
 
   static deserialize(user: ClientDeserializableUser): ClientUser {
@@ -106,6 +108,10 @@ export class ClientUser {
     return this.user.follower_count;
   }
 
+  get isFollowing(): boolean {
+    return this.user.is_following;
+  }
+
   async loadFollowing(){
     let response = await fetch(`api/v1/user/${this.id}/following`);
     const data = await response.json();
@@ -128,5 +134,31 @@ export class ClientUser {
     });
 
     return await response.json();
+  }
+
+  async follow(): Promise<void> {
+    const response = await fetch(`/api/v1/user/${this.id}/follow`, {
+      method: "POST",
+    });
+
+    const res = await response.json()
+
+    this.user = {
+      ...res,
+      creation_date: new Date(res.creation_date),
+    };
+  }
+
+  async unfollow(): Promise<void> {
+    const response = await fetch(`/api/v1/user/${this.id}/unfollow`, {
+      method: "POST",
+    });
+
+    const res = await response.json()
+
+    this.user = {
+      ...res,
+      creation_date: new Date(res.creation_date),
+    };
   }
 }

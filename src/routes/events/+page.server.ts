@@ -11,6 +11,6 @@ export async function load(event) {
   let events = await ServerEvent.loadTimeframe({ subject: self.user.id }, new Date(now - timeframe), new Date(now));
 
   return {
-    events: await Promise.all(events.map(event => event.serializeForFrontend())),
+    events: await Promise.all(events.map(event => event.serializeForFrontend(self.user))),
   };
 }

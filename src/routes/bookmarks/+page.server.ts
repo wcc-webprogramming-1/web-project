@@ -7,9 +7,9 @@ export async function load(event) {
     if (event.cookies.get("session") === undefined){
         throw redirect(307, "api/login/")
     }
-    const session_id = (await ServerSession.load(event.cookies.get("session")!)).user.id;
-	const bookmarks_array = await ServerTweet.loadBookmarks(session_id);
-    const bookmarks_serialized = bookmarks_array.map(tweet => tweet.serializeForFrontend());
+    const session_id = (await ServerSession.load(event.cookies.get("session")!)).user;
+	const bookmarks_array = await ServerTweet.loadBookmarks(session_id.id);
+    const bookmarks_serialized = bookmarks_array.map(tweet => tweet.serializeForFrontend(session_id));
     const bookmarks_serialized_array = await Promise.all(bookmarks_serialized);
 
     return {

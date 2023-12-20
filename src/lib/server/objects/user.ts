@@ -53,10 +53,10 @@ export class ServerUser {
     return user;
   }
 
-  static async loadForClient(using: Partial<UserRow>): Promise<ClientDeserializableUser> {
+  static async loadForClient(using: Partial<UserRow>, client: ServerUser): Promise<ClientDeserializableUser> {
     const user = await ServerUser.load(using);
 
-    return user.serializeForFrontend();
+    return user.serializeForFrontend(client);
   }
 
   static async create(constructionParameters: UserConstructionParameters): Promise<ServerUser> {
@@ -106,7 +106,7 @@ export class ServerUser {
 
   constructor(private row: UserRow) {}
 
-  async serializeForFrontend(): Promise<ClientDeserializableUser> {
+  async serializeForFrontend(reciever?: ServerUser): Promise<ClientDeserializableUser> {
     const profileAsset = this.row.profile_asset_id && await this.loadProfileAsset();
     const bannerAsset = this.row.banner_asset_id && await this.loadBannerAsset();
 
@@ -118,8 +118,9 @@ export class ServerUser {
       bio: this.bio,
       profile_asset: profileAsset && await profileAsset.serializeForFrontend(),
       banner_asset: bannerAsset && await bannerAsset.serializeForFrontend(),
-      following_count: this.getFollowingCount.length,
-      follower_count: this.getFollowersCount.length
+      following_count: await this.getFollowingCount(),
+      follower_count: await this.getFollowersCount(),
+      is_following: await reciever?.isFollowing(this) ?? false,
     }
   }
 
@@ -197,12 +198,30 @@ export class ServerUser {
   }
 
   async getFollowingCount(){
-    const count = await Database.query("SELECT COUNT(following) FROM follows WHERE follower = ?");
-    return count;
+    const count = await Database.query<{ C: bigint }>("SELECT COUNT(following) as C FROM follows WHERE follower = ?", [this.id]);
+    return Number(count[0].C);
   }
 
   async getFollowersCount(){
-    const count = await Database.query("SELECT COUNT(follower) FROM follows WHERE following = ?");
-    return count; 
+    const count = await Database.query<{ C: bigint }>("SELECT COUNT(follower) as C FROM follows WHERE following = ?", [this.id]);
+    return Number(count[0].C); 
+  }
+
+  async isFollowedBy(other: ServerUser) {
+    const count = await Database.query<{ C: bigint }>("SELECT COUNT(follower) as C FROM follows WHERE following = ? AND follower = ?", [this.id, other.id]);
+    return count[0].C > BigInt(0);
+  }
+
+  async isFollowing(other: ServerUser) {
+    const count = await Database.query<{ C: bigint }>("SELECT COUNT(following) as C FROM follows WHERE follower = ? AND following = ?", [this.id, other.id]);
+    return count[0].C > BigInt(0);
+  }
+
+  async follow(other: ServerUser) {
+    await Database.query("INSERT INTO follows (follower, following) VALUES (?, ?)", [this.id, other.id]);
+  }
+
+  async unfollow(other: ServerUser) {
+    await Database.query("DELETE FROM follows WHERE follower = ? AND following = ?", [this.id, other.id]);
   }
 }

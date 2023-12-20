@@ -9,16 +9,9 @@
     export let data: Type.PageData;
     import Button from "$lib/client/component/button.svelte";
 
-    let fake_followers = [
-        data.self,
-        data.self,
-        data.self,
-        data.self
-    ]
-
 </script>
 
-<Header title={data.self.username} description={data.self.handle} back_path="{base}/" />
+<Header title={data.self.username} description={data.self.handle} />
 
 <div class="followTabs">
     <a href="#" class="followers">Followers</a> 
@@ -27,7 +20,7 @@
 
 <section>
     <div>
-        {#each fake_followers as follower }
+        {#each data.followers as follower }
             <a href="{base}/u/{data.self.handle}" class="userRedirect"><div class = "accountList">
                 <UserBioView data = {follower}/>
                 <span><Button contents = {"Follow"}/></span>
@@ -42,7 +35,7 @@
         display: flex;
         justify-content: space-around;
         flex-direction:row;
-        padding-top: 5px;
+        padding-top: 30px;
         padding-left: 50px;
         padding-right: 50px;
         padding-bottom: 15px;

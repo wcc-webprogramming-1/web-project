@@ -35,7 +35,7 @@ function createDatabaseContext() {
     port: parseInt(env.DATABASE_PORT),
     user: env.DATABASE_USER,
     password: env.DATABASE_PASS,
-    connectionLimit: 1,
+    connectionLimit: 5,
     compress: env.USE_SSH_BRIDGE === "true",
     database: "webgroup1_default",
     stream: env.USE_SSH_BRIDGE !== "true" ? undefined : (callback) => {

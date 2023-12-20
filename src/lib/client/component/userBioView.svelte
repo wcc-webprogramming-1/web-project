@@ -7,7 +7,7 @@
 
 <div class="left-hand-side">
     <div class="icon">
-        <UserIcon user={data}/>
+        <UserIcon asset={data.profilePicture}/>
     </div>
     <div class="names">
         <pre class="name">{data.username}</pre>

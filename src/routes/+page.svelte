@@ -33,7 +33,7 @@
 {#if $Session.isLoggedIn}
   <div class="tweetBoxWrap">
     <div class="tweetBox tweetBoxShadow">
-      <div class="icon"><UserIcon user={$Session.user}/></div>
+      <div class="icon"><UserIcon asset={$Session.user.profilePicture}/></div>
       <textarea placeholder="What is happening?!" id="tweet" name="tweet" bind:value={content_post}/>
     </div>
   </div>

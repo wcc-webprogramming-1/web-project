@@ -50,6 +50,6 @@ export const actions = {
       path: "/",
     });
 
-    return await user!.serializeForFrontend();
+    return await user!.serializeForFrontend(session.user);
   }
 }

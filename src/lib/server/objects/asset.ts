@@ -6,6 +6,7 @@ import crypto from "node:crypto";
 import findImageType from "image-type";
 import imageSize from "image-size";
 import fs from "node:fs";
+import { ServerSession } from "./session";
 
 export type AssetId = number[];
 

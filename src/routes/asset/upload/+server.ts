@@ -1,4 +1,5 @@
 import { ServerAsset } from "$lib/server/objects/asset";
+import { ServerSession } from "$lib/server/objects/session";
 import { decodeAssetId } from "$lib/util/assetId";
 
 /** @type {import("./$types").RequestHandler} */

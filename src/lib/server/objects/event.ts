@@ -1,6 +1,7 @@
 import type { ClientDeserializableEvent, EventType } from "$lib/client/objects/event";
 import { Database } from "../database";
 import { WebsocketSession } from "../socket/session";
+import { ServerSession } from "./session";
 import { ServerTweet } from "./tweet";
 import { ServerUser } from "./user";
 
@@ -53,10 +54,10 @@ export class ServerEvent {
     return event;
   }
 
-  static async loadForClient(using: Partial<EventRow>): Promise<ClientDeserializableEvent> {
+  static async loadForClient(using: Partial<EventRow>, client: ServerUser): Promise<ClientDeserializableEvent> {
     const event = await ServerEvent.load(using);
 
-    return event.serializeForFrontend();
+    return event.serializeForFrontend(client);
   }
 
   static async loadSet(using: Partial<EventRow>): Promise<ServerEvent[]> {
@@ -67,10 +68,10 @@ export class ServerEvent {
     return eventRows.map(row => new ServerEvent(row));
   }
 
-  static async loadSetForClient(using: Partial<EventRow>): Promise<ClientDeserializableEvent[]> {
+  static async loadSetForClient(using: Partial<EventRow>, client: ServerUser): Promise<ClientDeserializableEvent[]> {
     const events = await ServerEvent.loadSet(using);
 
-    return await Promise.all(events.map(event => event.serializeForFrontend()));
+    return await Promise.all(events.map(event => event.serializeForFrontend(client)));
   }
 
   static async getOrCreate(constructionParameters: EventConstructionParameters): Promise<ServerEvent> {
@@ -157,18 +158,18 @@ export class ServerEvent {
     return this.cache_post = await ServerTweet.load({ id: this.row.post });
   }
 
-  async serializeForFrontend(): Promise<ClientDeserializableEvent> {
+  async serializeForFrontend(consumer?: ServerUser): Promise<ClientDeserializableEvent> {
     const actor = await this.loadActor();
     const subject = await this.loadSubject();
     const post = await this.loadPost();
 
     return {
       id: this.id,
-      actor: await actor.serializeForFrontend(),
+      actor: await actor.serializeForFrontend(consumer),
       type: this.type,
-      subject: await subject.serializeForFrontend(),
+      subject: await subject.serializeForFrontend(consumer),
       time: this.time.getTime(),
-      post: await post?.serializeForFrontend(),
+      post: await post?.serializeForFrontend(consumer),
     }
   }
 }

@@ -35,7 +35,7 @@ export const actions = {
     });
 
     const res = {
-      user: await user!.serializeForFrontend(),
+      user: await user!.serializeForFrontend(user!),
       token: session.id,
     };
 
