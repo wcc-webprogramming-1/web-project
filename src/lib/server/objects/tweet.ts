@@ -81,6 +81,8 @@ export class ServerTweet {
             throw new Error("Ambiguous Input: Multiple tweets found");
         }
         return new ServerTweet(tweetRows[0]);
+    }
+
     static async loadBookmarks(userId: number): Promise<ServerTweet[]> {
         const query = `SELECT * from bookmarks WHERE userId = ?`;
         const tweet_id_array = await Database.query<{ tweetId: number }>(query, [userId]);
